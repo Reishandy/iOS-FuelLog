@@ -34,8 +34,4 @@ class Vehicle: Identifiable, Equatable {
 		self.vehivleType = vehivleType
 		self.refuels = refuels
 	}
-	
-	var totalRefuelAmount: Double {
-		refuels.reduce(0.0) { $0 + $1.amount }
-	}
 }

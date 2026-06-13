@@ -9,10 +9,14 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+	@Namespace private var homeScreenNameSpace
+	
 	@Environment(\.modelContext) private var modelContext
 	@Environment(NavigationRouter.self) private var router
 	
 	@State var homeViewModel: HomeViewModel
+	@State var isAddSheetPresented: Bool = false
+	@State var isSettingsPresented: Bool = false
 	
 	var body: some View {
 		Group {
@@ -45,13 +49,34 @@ struct HomeView: View {
 		.toolbar {
 			ToolbarItem(placement: .topBarTrailing) {
 				Button("Settings", systemImage: "gearshape") {
-					// TODO: App setting
+					isSettingsPresented.toggle()
+				}
+				.popover(isPresented: $isSettingsPresented) {
+					Text("TODO")
+						.frame(width: 400, height: 400)
+						.presentationCompactAdaptation(.popover)
 				}
 			}
 			
 			ToolbarItem(placement: .bottomBar) {
-				Button("Filter Vehicles", systemImage: "line.3.horizontal.decrease") {
-					// TODO: Vehicle filter, group by, sort by
+				Menu {
+					Menu("Sort By") {
+						Picker("Sort By", selection: $homeViewModel.vehicleSortBy) {
+							ForEach(VehicleSortBy.allCases, id: \.self) { option in
+								Text(option.rawValue).tag(option)
+							}
+						}
+					}
+					
+					Menu("Group By") {
+						Picker("Group By", selection: $homeViewModel.vehicleGroupBy) {
+							ForEach(VehicleGroupBy.allCases, id: \.self) { option in
+								Text(option.rawValue).tag(option)
+							}
+						}
+					}
+				} label: {
+					Label("Filter Vehicles", systemImage: "line.3.horizontal.decrease")
 				}
 			}
 			
@@ -61,9 +86,15 @@ struct HomeView: View {
 			
 			ToolbarItem(placement: .bottomBar) {
 				Button("Add Vehicle", systemImage: "plus") {
-					// TODO: Add Vehicle
+					isAddSheetPresented.toggle()
 				}
+				.matchedTransitionSource(id: "addSheetSource", in: homeScreenNameSpace)
 			}
+		}
+		.sheet(isPresented: $isAddSheetPresented) {
+			Text("TODO")
+				.presentationDetents([.medium])
+				.navigationTransition(.zoom(sourceID: "addSheetSource", in: homeScreenNameSpace))
 		}
 		.task {
 			homeViewModel.fetchData()

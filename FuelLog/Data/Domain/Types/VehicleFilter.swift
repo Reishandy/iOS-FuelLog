@@ -5,21 +5,17 @@
 //  Created by Muhammad Akbar Reishandy on 13/06/26.
 //
 
-enum VehicleGroupBy {
-	case none
-	case vehivleType
-	case vehicleBrand
+enum VehicleGroupBy: String, CaseIterable {
+	case none = "None"
+	case vehivleType = "Type"
+	case vehicleBrand = "Brand"
 }
 
-enum VehicleSortBy {
-	case timestampAsc
-	case timestampDesc
-	case nameAsc
-	case nameDesc
-	case yearAsc
-	case yearDesc
-	case refuelCountAsc
-	case refuelCountDesc
-	case refuelAmountAsc
-	case refuelAmountDesc
+enum VehicleSortBy: String, CaseIterable {
+	case timestampAsc = "Newest"
+	case timestampDesc = "Oldest"
+	case nameAsc = "Name (A-Z)"
+	case nameDesc = "Name (Z-A)"
+	case yearAsc = "Year Newest"
+	case yearDesc = "Year Oldest"
 }

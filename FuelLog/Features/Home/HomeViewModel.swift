@@ -58,14 +58,6 @@ class HomeViewModel {
 			sortedVehicles = searchedVehicles.sorted(by: { $0.year < $1.year })
 		case .yearDesc:
 			sortedVehicles = searchedVehicles.sorted(by: { $0.year > $1.year })
-		case .refuelCountAsc:
-			sortedVehicles = searchedVehicles.sorted(by: { $0.refuels.count < $1.refuels.count })
-		case .refuelCountDesc:
-			sortedVehicles = searchedVehicles.sorted(by: { $0.refuels.count > $1.refuels.count })
-		case .refuelAmountAsc:
-			sortedVehicles = searchedVehicles.sorted(by: { $0.totalRefuelAmount < $1.totalRefuelAmount })
-		case .refuelAmountDesc:
-			sortedVehicles = searchedVehicles.sorted(by: { $0.totalRefuelAmount > $1.totalRefuelAmount })
 		}
 		
 		let groupedVehicles: [String: [Vehicle]]
