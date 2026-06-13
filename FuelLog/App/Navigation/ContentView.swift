@@ -19,7 +19,9 @@ struct ContentView: View {
 	//	- bunch of filters, group by, sort by, etc
 	//	- input with existing options from already inputted form
 	//	- Settings and preferences store
-	//	- Metrics or Imperial
+	//	- Metrics or Imperial setting (if already have data offer to convert)
+	// TODO: Fix list
+	//	- Not navigating on the spacer place only on content for the list
 	
 	var body: some View {
 		NavigationStack(path: $router.path) {
@@ -29,6 +31,8 @@ struct ContentView: View {
 					switch route {
 					case .home:
 						HomeView(homeViewModel: HomeViewModel(modelContext: modelContext))
+					case .vehicleDetail(let vehicle):
+						Text("Detail for \(vehicle.name)")
 					}
 				}
 		}
@@ -37,4 +41,5 @@ struct ContentView: View {
 
 #Preview {
 	ContentView()
+		.modelContext(PreviewContainer.shared.mainContext)
 }

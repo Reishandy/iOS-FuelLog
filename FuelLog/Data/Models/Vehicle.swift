@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class Vehicle {
+class Vehicle: Identifiable, Equatable {
 	var id: UUID
 	var timestamp: Date
 	
@@ -33,5 +33,9 @@ class Vehicle {
 		self.tankCapacityLiter = tankCapacityLiter
 		self.vehivleType = vehivleType
 		self.refuels = refuels
+	}
+	
+	var totalRefuelAmount: Double {
+		refuels.reduce(0.0) { $0 + $1.amount }
 	}
 }

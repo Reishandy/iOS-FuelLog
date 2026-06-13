@@ -10,7 +10,6 @@ class PreviewContainer {
 			let container = try ModelContainer(for: schema, configurations: [config])
 			let context = container.mainContext
 			
-			// Below are AI Generated... I'm to lazy for just preview hehe :3
 			func daysAgo(_ days: Int) -> Date {
 				Calendar.current.date(byAdding: .day, value: -days, to: .now) ?? .now
 			}
@@ -67,17 +66,14 @@ class PreviewContainer {
 			) {
 				var currentOdo = startOdometer
 				
-				// Process from oldest date to newest so the odometer increments forward
 				for days in daysAgoList.sorted(by: >) {
-					// Add a slight random variance (± 5%) so fill-ups aren't exactly the same every time
 					let variance = Double.random(in: -0.05...0.05)
 					let rawLiters = avgLiters + (avgLiters * variance)
-					// Round to 1 decimal place for realistic pump numbers
 					let liters = (rawLiters * 10).rounded() / 10
 					
 					let refuel = Refuel(
 						odometer: currentOdo,
-						amounfLiters: liters,
+						amount: liters,
 						pricePerLiter: pricePerLiter,
 						fuelType: fuelType,
 						vehicle: vehicle
@@ -85,15 +81,11 @@ class PreviewContainer {
 					refuel.timestamp = daysAgo(days)
 					context.insert(refuel)
 					
-					// Calculate distance traveled for the NEXT refuel
 					let distanceTraveled = liters * kmPerLiter
 					currentOdo += distanceTraveled
 				}
 			}
 			
-			// MARK: - 3-Month Data Injection
-			
-			// PCX: ~40 km/L. Refuels every 4-5 days.
 			generateHistory(
 				for: commuterPcx,
 				startOdometer: 2000,
@@ -104,7 +96,6 @@ class PreviewContainer {
 				daysAgoList: [89, 84, 80, 75, 71, 66, 62, 57, 53, 49, 44, 40, 35, 31, 26, 22, 18, 13, 9, 4, 1]
 			)
 			
-			// Vario: ~45 km/L. Short trips, refuels every 8-9 days.
 			generateHistory(
 				for: campusVario,
 				startOdometer: 14500,
@@ -115,7 +106,6 @@ class PreviewContainer {
 				daysAgoList: [88, 79, 70, 62, 53, 44, 35, 26, 17, 8, 2]
 			)
 			
-			// Brio: ~12 km/L in city traffic. Refuels every 7 days.
 			generateHistory(
 				for: cityBrio,
 				startOdometer: 30000,
@@ -126,7 +116,6 @@ class PreviewContainer {
 				daysAgoList: [90, 83, 76, 69, 62, 55, 48, 41, 34, 27, 20, 13, 6]
 			)
 			
-			// Innova Diesel: ~10 km/L. Occasional big trips, huge fill-ups every ~15-20 days.
 			generateHistory(
 				for: oldDieselToyota,
 				startOdometer: 248000,

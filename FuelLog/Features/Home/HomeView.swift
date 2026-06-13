@@ -10,36 +10,34 @@ import SwiftData
 
 struct HomeView: View {
 	@Environment(\.modelContext) private var modelContext
+	@Environment(NavigationRouter.self) private var router
 	
 	@State var homeViewModel: HomeViewModel
 	
 	var body: some View {
-		ScrollView {
-			ForEach(1...5, id: \.self) { num in
-				VehicleListSubHeaderView(title: "Motorcycle \(num)", isExpanded: true) {
-					// TODO: Collapse
-				}
-			
-				ForEach(1...(num + 3), id: \.self) { lowNum in
-					VehicleListItemView(
-						title: "Motorcycle \(lowNum)",
-						subTitle: "Honda PCX 160 2024",
-						amount: lowNum * (num + 3),
-						icon: "motorcycle",
-						isDefault: lowNum == 1 && num == 1
-					)
+		Group {
+			if homeViewModel.filteredVehicles.isEmpty {
+				VStack(spacing: 8) {
+					Text("No vehicle here")
+						.font(.title2)
+						.bold()
 					
-					if lowNum != num + 3 {
-						Divider()
-					}
+					Text("Add some first")
+						.opacity(0.7)
 				}
-				.frame(maxWidth: .infinity, alignment: .leading)
+			} else {
+				CustomListView(groupedItem: homeViewModel.filteredVehicles) { vehicle in
+					Button {
+						router.navigate(to: .vehicleDetail(vehicle: vehicle))
+					} label: {
+						VehicleListItemView(vehicle: vehicle, isDefault: false) // TODO: isDefault
+					}
+					.buttonStyle(.plain)
+				}
 			}
-			.padding(.horizontal, 20)
-			.frame(maxWidth: .infinity, alignment: .leading)
 		}
 		.searchable(
-			text: .constant(""), // TODO: Vehicle search
+			text: $homeViewModel.vehicleSearchTerm,
 			placement: .toolbar,
 			prompt: "Search Vehicle..."
 		)
@@ -59,13 +57,18 @@ struct HomeView: View {
 			
 			DefaultToolbarItem(kind: .search, placement: .bottomBar)
 			
+			ToolbarSpacer(placement: .bottomBar)
+			
 			ToolbarItem(placement: .bottomBar) {
 				Button("Add Vehicle", systemImage: "plus") {
 					// TODO: Add Vehicle
 				}
-				.buttonStyle(.glassProminent)
 			}
 		}
+		.task {
+			homeViewModel.fetchData()
+		}
+		.animation(.easeInOut, value: homeViewModel.filteredVehicles)
 	}
 }
 

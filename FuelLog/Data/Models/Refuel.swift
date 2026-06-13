@@ -9,22 +9,22 @@ import Foundation
 import SwiftData
 
 @Model
-class Refuel {
+class Refuel: Identifiable, Equatable {
 	var id: UUID
 	var timestamp: Date
 	
 	var odometer: Double
-	var amounfLiters: Double
+	var amount: Double
 	var pricePerLiter: Double
 	var fuelType: String?
 	
 	var vehicle: Vehicle?
 	
-	init(odometer: Double, amounfLiters: Double, pricePerLiter: Double, fuelType: String? = nil, vehicle: Vehicle? = nil) {
+	init(odometer: Double, amount: Double, pricePerLiter: Double, fuelType: String? = nil, vehicle: Vehicle? = nil) {
 		self.id = UUID()
 		self.timestamp = .now
 		self.odometer = odometer
-		self.amounfLiters = amounfLiters
+		self.amount = amount
 		self.pricePerLiter = pricePerLiter
 		self.fuelType = fuelType
 		self.vehicle = vehicle
