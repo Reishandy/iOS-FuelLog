@@ -6,8 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
+	@Environment(\.modelContext) private var modelContext
+	
+	@State var homeViewModel: HomeViewModel
+	
 	var body: some View {
 		ScrollView {
 			ForEach(1...5, id: \.self) { num in
@@ -54,8 +59,6 @@ struct HomeView: View {
 			
 			DefaultToolbarItem(kind: .search, placement: .bottomBar)
 			
-			ToolbarSpacer(.flexible, placement: .bottomBar)
-			
 			ToolbarItem(placement: .bottomBar) {
 				Button("Add Vehicle", systemImage: "plus") {
 					// TODO: Add Vehicle
@@ -68,6 +71,6 @@ struct HomeView: View {
 
 #Preview {
 	NavigationStack	{
-		HomeView()
+		HomeView(homeViewModel: HomeViewModel(modelContext: PreviewContainer.shared.mainContext))
 	}
 }
