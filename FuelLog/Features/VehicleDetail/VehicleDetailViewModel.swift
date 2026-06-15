@@ -11,20 +11,21 @@ import SwiftData
 @Observable
 class VehicleDetailViewModel {
 	private var modelContext: ModelContext
-	private var vehicleId: String
+	private var vehicleId: UUID
 	
 	var vehicle: Vehicle? = nil
 	var filteredRefuels: [String: [Refuel]] = [:]
 	
-	init(modelContext: ModelContext, vehicleId: String) {
+	init(modelContext: ModelContext, vehicleId: UUID) {
 		self.modelContext = modelContext
 		self.vehicleId = vehicleId
 	}
 	
 	func fetchData() {
 		do {
+			let targetId = self.vehicleId
 			var descriptor = FetchDescriptor<Vehicle>(
-				predicate: #Predicate { $0.id.uuidString == self.vehicleId }
+				predicate: #Predicate { $0.id == targetId }
 			)
 			descriptor.fetchLimit = 1
 			
