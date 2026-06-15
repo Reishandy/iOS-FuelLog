@@ -20,6 +20,13 @@ class HomeViewModel {
 	var vehicleSortBy: VehicleSortBy = .timestampAsc { didSet { filterVehcile() } }
 	var vehicleSearchTerm: String = "" { didSet { filterVehcile() } }
 	
+	var addName: String = ""
+	var addBrand: String = ""
+	var addModel: String = ""
+	var addYear: Int = Calendar.current.component(.year, from: Date())
+	var addCapacity: Double = 0.0
+	var addType: VehicleType = .motorcycle
+	
 	init(modelContext: ModelContext) {
 		self.modelContext = modelContext
 		
@@ -34,6 +41,30 @@ class HomeViewModel {
 		} catch {
 			print("ERROR > Failed populating HomeViewModel: \(error)")
 		}
+	}
+	
+	func addVehicle() {
+		self.modelContext.insert(
+			Vehicle(
+				name: self.addName,
+				brand: self.addBrand,
+				model: self.addBrand,
+				year: self.addYear,
+				tankCapacityLiter: self.addCapacity,
+				vehivleType: self.addType
+			)
+		)
+		self.fetchData()
+		self.clearAddVehicle()
+	}
+	
+	func clearAddVehicle() {
+		self.addName = ""
+		self.addBrand = ""
+		self.addModel = ""
+		self.addYear = Calendar.current.component(.year, from: Date())
+		self.addCapacity = 0.0
+		self.addType = .motorcycle
 	}
 	
 	private func filterVehcile() {

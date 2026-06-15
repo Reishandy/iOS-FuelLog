@@ -12,19 +12,15 @@ struct CustomListView<T: Identifiable & Equatable, Content: View>: View {
 	var groupedItem: [String: [T]] = [:]
 	@ViewBuilder let content: (_ item: T) -> Content
 	
+	@State private var showDeleteConfirmation = false
+	
 	var body: some View {
 		List {
 			ForEach(groupedItem.keys.sorted(), id: \.self) { title in
 				Section {
 					ForEach(groupedItem[title] ?? []) { item in
 						content(item)
-							.swipeActions(edge: .trailing, allowsFullSwipe: false) {
-								Button {
-									
-								} label: {
-									Image(systemName: "trash")
-								}
-							}
+						// TODO: Fix this
 							.swipeActions(edge: .trailing, allowsFullSwipe: false) {
 								Button {
 									

@@ -5,7 +5,7 @@
 //  Created by Muhammad Akbar Reishandy on 12/06/26.
 //
 
-nonisolated enum VehicleType: String, Codable {
+nonisolated enum VehicleType: String, CaseIterable, Codable {
 	case motorcycle = "Motorcycle"
 	case car = "Car"
 }

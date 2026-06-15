@@ -92,9 +92,23 @@ struct HomeView: View {
 			}
 		}
 		.sheet(isPresented: $isAddSheetPresented) {
-			Text("TODO")
-				.presentationDetents([.medium])
-				.navigationTransition(.zoom(sourceID: "addSheetSource", in: homeScreenNameSpace))
+			VehicleFormSheetView(
+				name: $homeViewModel.addName,
+				brand: $homeViewModel.addBrand,
+				model: $homeViewModel.addModel,
+				year: $homeViewModel.addYear,
+				capacity: $homeViewModel.addCapacity,
+				type: $homeViewModel.addType,
+				onDismissClick: {
+					isAddSheetPresented = false
+					homeViewModel.clearAddVehicle()
+				},
+				onSaveClick: {
+					isAddSheetPresented = false
+					homeViewModel.addVehicle()
+				}
+			)
+			.navigationTransition(.zoom(sourceID: "addSheetSource", in: homeScreenNameSpace))
 		}
 		.task {
 			homeViewModel.fetchData()
