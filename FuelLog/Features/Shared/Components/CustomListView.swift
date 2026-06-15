@@ -20,14 +20,6 @@ struct CustomListView<T: Identifiable & Equatable, Content: View>: View {
 				Section {
 					ForEach(groupedItem[title] ?? []) { item in
 						content(item)
-						// TODO: Fix this
-							.swipeActions(edge: .trailing, allowsFullSwipe: false) {
-								Button {
-									
-								} label: {
-									Image(systemName: "trash")
-								}
-							}
 					}
 				} header: {
 					Text(title)

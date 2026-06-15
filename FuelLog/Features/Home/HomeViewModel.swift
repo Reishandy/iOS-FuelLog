@@ -15,10 +15,10 @@ class HomeViewModel {
 	
 	var filteredVehicles: [String: [Vehicle]] = [:]
 	
-	var expandedSection: [String] = []
 	var vehicleGroupBy: VehicleGroupBy = .vehivleType { didSet { filterVehcile() } }
 	var vehicleSortBy: VehicleSortBy = .timestampAsc { didSet { filterVehcile() } }
 	var vehicleSearchTerm: String = "" { didSet { filterVehcile() } }
+	var vehicleToDelete: Vehicle? = nil
 	
 	var addName: String = ""
 	var addBrand: String = ""
@@ -56,6 +56,15 @@ class HomeViewModel {
 		)
 		self.fetchData()
 		self.clearAddVehicle()
+	}
+	
+	func deleteVehicle() {
+		if let vehicleToDelete = self.vehicleToDelete {
+			modelContext.delete(vehicleToDelete)
+			
+			self.fetchData()
+			self.vehicleToDelete = nil
+		}
 	}
 	
 	func clearAddVehicle() {
@@ -102,6 +111,5 @@ class HomeViewModel {
 		}
 		
 		self.filteredVehicles = groupedVehicles
-		self.expandedSection = groupedVehicles.keys.sorted()
 	}
 }

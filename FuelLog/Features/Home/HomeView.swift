@@ -15,8 +15,10 @@ struct HomeView: View {
 	@Environment(NavigationRouter.self) private var router
 	
 	@State var homeViewModel: HomeViewModel
-	@State var isAddSheetPresented: Bool = false
-	@State var isSettingsPresented: Bool = false
+	
+	@State private var isAddSheetPresented: Bool = false
+	@State private var isSettingsPresented: Bool = false
+	@State private var isDeleteConfirmmationShown: Bool = false
 	
 	var body: some View {
 		Group {
@@ -35,6 +37,26 @@ struct HomeView: View {
 						router.navigate(to: .vehicleDetail(vehicle: vehicle))
 					} label: {
 						VehicleListItemView(vehicle: vehicle, isDefault: false) // TODO: isDefault
+							.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+								Button {
+									homeViewModel.vehicleToDelete = vehicle
+									isDeleteConfirmmationShown = true
+								} label: {
+									Image(systemName: "trash")
+									Text("Delete")
+								}
+								.tint(.red)
+								
+								
+								Button {
+									
+								} label: {
+									Image(systemName: "checkmark.circle.fill")
+									Text("Default")
+								}
+								.tint(.blue) // TODO: isDefault
+							}
+							
 					}
 					.buttonStyle(.plain)
 				}
@@ -110,10 +132,24 @@ struct HomeView: View {
 			)
 			.navigationTransition(.zoom(sourceID: "addSheetSource", in: homeScreenNameSpace))
 		}
+		.alert(
+			"Delete Vehicle",
+			isPresented: $isDeleteConfirmmationShown,
+			presenting: homeViewModel.vehicleToDelete
+		) { vehicle in
+			Button("Delete", role: .destructive) {
+				homeViewModel.deleteVehicle()
+			}
+			Button("Cancel", role: .cancel) {
+				homeViewModel.vehicleToDelete = nil
+			}
+		} message: { vehicle in
+			Text("Deleting \(homeViewModel.vehicleToDelete?.name ?? "this vehicle") will also permanently remove its refueling history.")
+		}
 		.task {
 			homeViewModel.fetchData()
 		}
-		.animation(.easeInOut, value: homeViewModel.filteredVehicles)
+		.animation(.default, value: homeViewModel.filteredVehicles)
 	}
 }
 
