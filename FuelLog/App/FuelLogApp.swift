@@ -16,6 +16,7 @@ struct FuelLogApp: App {
         WindowGroup {
             ContentView()
 				.modelContainer(for: [Vehicle.self, Refuel.self])
+				.environment(preferences)
         }
     }
 }

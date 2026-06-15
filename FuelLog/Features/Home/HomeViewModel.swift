@@ -119,7 +119,7 @@ class HomeViewModel {
 		let groupedVehicles: [String: [Vehicle]]
 		switch self.vehicleGroupBy {
 		case .none:
-			groupedVehicles = ["": sortedVehicles]
+			groupedVehicles = sortedVehicles.isEmpty ? [:] : ["": sortedVehicles]
 		case .vehicleType:
 			groupedVehicles = Dictionary(grouping: sortedVehicles) { $0.vehivleType.rawValue }
 		case .vehicleBrand:

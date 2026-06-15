@@ -135,7 +135,7 @@ struct HomeView: View {
 			.navigationTransition(.zoom(sourceID: "addSheetSource", in: homeScreenNameSpace))
 		}
 		.alert(
-			"Delete Vehicle",
+			"Delete Vehicle?",
 			isPresented: $isDeleteConfirmmationShown,
 			presenting: homeViewModel.vehicleToDelete
 		) { vehicle in
