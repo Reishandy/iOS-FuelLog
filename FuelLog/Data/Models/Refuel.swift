@@ -29,4 +29,12 @@ class Refuel: Identifiable, Equatable {
 		self.fuelType = fuelType
 		self.vehicle = vehicle
 	}
+	
+	var formattedTimestamp: String {
+		self.timestamp.formatted(.verbatim("\(day: .twoDigits)/\(month: .twoDigits)/\(year: .extended())", timeZone: .current, calendar: .current))
+	}
+	
+	var totalPrice: Double {
+		amount * pricePerLiter
+	}
 }

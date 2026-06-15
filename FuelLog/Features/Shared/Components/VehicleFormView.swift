@@ -52,6 +52,7 @@ struct VehicleFormView: View {
 						Picker("Select Brand", selection: $brand) {
 							Text("Select Brand").tag("")
 							
+							// TODO: Make this also include custom brands
 							ForEach(brandList, id: \.self) { option in
 								Text(option).tag(option)
 							}
@@ -83,6 +84,7 @@ struct VehicleFormView: View {
 						
 						Spacer()
 						
+						// TODO: Use locale for unit
 						Text("Liters")
 							.font(.subheadline)
 							.opacity(0.6)

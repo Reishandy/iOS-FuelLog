@@ -16,6 +16,9 @@ class VehicleDetailViewModel {
 	var vehicle: Vehicle? = nil
 	var filteredRefuels: [String: [Refuel]] = [:]
 	
+	var selectedRefuel: Refuel? = nil
+	var refuelToDelete: Refuel? = nil
+	
 	var sortedSectionKeys: [String] {
 		let predefinedOrder = ["Today", "Yesterday", "Past 7 Days", "Past 30 Days"]
 		
@@ -60,6 +63,16 @@ class VehicleDetailViewModel {
 			self.filterRefuels()
 		} catch {
 			print("ERROR > Failed populating VehicleDetailViewModel: \(error)")
+		}
+	}
+	
+	func deleteRefuel() {
+		if let refuelToDelete = self.refuelToDelete {
+			modelContext.delete(refuelToDelete)
+			try? modelContext.save()
+			
+			self.fetchData()
+			self.refuelToDelete = nil
 		}
 	}
 	

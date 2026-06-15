@@ -16,7 +16,7 @@ struct HomeView: View {
 	
 	@State private var isAddSheetPresented: Bool = false
 	@State private var isSettingsPresented: Bool = false
-	@State private var isDeleteConfirmmationShown: Bool = false
+	@State private var isDeleteConfirmmationPresented: Bool = false
 	
 	var body: some View {
 		Group {
@@ -38,7 +38,7 @@ struct HomeView: View {
 							.swipeActions(edge: .trailing, allowsFullSwipe: false) {
 								Button {
 									homeViewModel.vehicleToDelete = vehicle
-									isDeleteConfirmmationShown = true
+									isDeleteConfirmmationPresented = true
 								} label: {
 									Image(systemName: "trash")
 									Text("Delete")
@@ -93,8 +93,9 @@ struct HomeView: View {
 					isSettingsPresented.toggle()
 				}
 				.popover(isPresented: $isSettingsPresented) {
+					// TODO: Make the width infinity with padding
 					Text("TODO")
-						.frame(width: 400, height: 400)
+						.frame(width: 300, height: 300)
 						.presentationCompactAdaptation(.popover)
 				}
 			}
@@ -133,7 +134,7 @@ struct HomeView: View {
 		}
 		.alert(
 			"Delete Vehicle?",
-			isPresented: $isDeleteConfirmmationShown,
+			isPresented: $isDeleteConfirmmationPresented,
 			presenting: homeViewModel.vehicleToDelete
 		) { vehicle in
 			Button("Delete", role: .destructive) {

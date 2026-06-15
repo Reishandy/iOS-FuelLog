@@ -35,7 +35,7 @@ struct VehicleListItemView: View {
 				
 				Text(subTitle)
 					.lineLimit(1)
-					.font(.caption)
+					.font(.subheadline)
 					.opacity(0.7)
 			}
 			
