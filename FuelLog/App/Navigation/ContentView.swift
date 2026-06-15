@@ -36,7 +36,7 @@ struct ContentView: View {
 					case .home:
 						HomeView(homeViewModel: HomeViewModel(modelContext: modelContext, preferences: preferences))
 					case .vehicleDetail(let vehicleId):
-						Text("Detail for \(vehicleId)")
+						VehicleDetailVeiw(vehicleDetailViewModel: VehicleDetailViewModel(modelContext: modelContext, vehicleId: vehicleId))
 					}
 				}
 		}

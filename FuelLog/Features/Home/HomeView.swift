@@ -10,8 +10,6 @@ import SwiftData
 
 struct HomeView: View {
 	@Namespace private var homeScreenNameSpace
-	
-	@Environment(\.modelContext) private var modelContext
 	@Environment(NavigationRouter.self) private var router
 	
 	@State var homeViewModel: HomeViewModel
@@ -58,7 +56,6 @@ struct HomeView: View {
 							}
 							
 					}
-					.buttonStyle(.plain)
 				}
 			}
 		}

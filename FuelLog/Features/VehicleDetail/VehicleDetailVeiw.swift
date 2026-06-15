@@ -6,13 +6,51 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct VehicleDetailVeiw: View {
+	@State var vehicleDetailViewModel: VehicleDetailViewModel
+	
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+		VStack {
+			// TODO: Vehicle detail
+			
+			if vehicleDetailViewModel.filteredRefuels.isEmpty {
+				VStack(spacing: 8) {
+					Text("No refuel here")
+						.font(.title2)
+						.bold()
+					
+					Text("Record some first")
+						.opacity(0.7)
+				}
+			} else {
+				CustomListView(groupedItem: vehicleDetailViewModel.filteredRefuels) { refuel in
+					Text(String(refuel.amount))
+					// TODO: DO something with thiss
+				}
+			}
+		}
+		.task {
+			vehicleDetailViewModel.fetchData()
+		}
     }
 }
 
 #Preview {
-    VehicleDetailVeiw()
+	let context = PreviewContainer.shared.mainContext
+	
+	let descriptor = FetchDescriptor<Vehicle>()
+	let vehicles = try? context.fetch(descriptor)
+	
+	let firstVehicleId = vehicles?.first?.id ?? UUID()
+	
+	return NavigationStack {
+		VehicleDetailVeiw(
+			vehicleDetailViewModel: VehicleDetailViewModel(
+				modelContext: context,
+				vehicleId: firstVehicleId
+			)
+		)
+	}
 }

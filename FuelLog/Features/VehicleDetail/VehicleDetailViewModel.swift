@@ -14,7 +14,34 @@ class VehicleDetailViewModel {
 	private var vehicleId: UUID
 	
 	var vehicle: Vehicle? = nil
-	var filteredRefuels: [RefuelSection] = []
+	var filteredRefuels: [String: [Refuel]] = [:]
+	
+	var sortedSectionKeys: [String] {
+		let predefinedOrder = ["Today", "Yesterday", "Past 30 Days"]
+		
+		let monthYearFormatter = DateFormatter()
+		monthYearFormatter.dateFormat = "MMMM yyyy"
+		
+		return filteredRefuels.keys.sorted { key1, key2 in
+			let index1 = predefinedOrder.firstIndex(of: key1)
+			let index2 = predefinedOrder.firstIndex(of: key2)
+			
+			if let idx1 = index1, let idx2 = index2 {
+				return idx1 < idx2
+			}
+			
+			if index1 != nil { return true }
+			if index2 != nil { return false }
+			
+			if let date1 = monthYearFormatter.date(from: key1),
+			   let date2 = monthYearFormatter.date(from: key2) {
+				
+				return date1 > date2
+			}
+			
+			return key1 > key2
+		}
+	}
 	
 	init(modelContext: ModelContext, vehicleId: UUID) {
 		self.modelContext = modelContext
@@ -39,55 +66,37 @@ class VehicleDetailViewModel {
 	private func filterRefuels() {
 		guard let vehicle = self.vehicle else { return }
 		
+		var grouped: [String: [Refuel]] = [:]
 		let calendar = Calendar.current
-		let now = Date.now
-		
-		var today: [Refuel] = []
-		var yesterday: [Refuel] = []
-		var past30: [Refuel] = []
-		var monthBuckets: [Date: [Refuel]] = [:]
-		
-		for refuel in vehicle.refuels {
-			let date = refuel.timestamp
-			
-			if calendar.isDateInToday(date) {
-				today.append(refuel)
-			} else if calendar.isDateInYesterday(date) {
-				yesterday.append(refuel)
-			} else if let daysAgo = calendar.dateComponents([.day], from: date, to: now).day, daysAgo <= 30 {
-				past30.append(refuel)
-			} else {
-				let components = calendar.dateComponents([.year, .month], from: date)
-				if let startOfMonth = calendar.date(from: components) {
-					monthBuckets[startOfMonth, default: []].append(refuel)
-				}
-			}
-		}
-		
-		var finalSections: [RefuelSection] = []
-		
-		if !today.isEmpty {
-			finalSections.append(RefuelSection(title: "Today", refuels: today.sorted(by: { $0.timestamp > $1.timestamp })))
-		}
-		if !yesterday.isEmpty {
-			finalSections.append(RefuelSection(title: "Yesterday", refuels: yesterday.sorted(by: { $0.timestamp > $1.timestamp })))
-		}
-		if !past30.isEmpty {
-			finalSections.append(RefuelSection(title: "Past 30 Days", refuels: past30.sorted(by: { $0.timestamp > $1.timestamp })))
-		}
 		
 		let monthYearFormatter = DateFormatter()
 		monthYearFormatter.dateFormat = "MMMM yyyy"
 		
-		let sortedMonthDates = monthBuckets.keys.sorted(by: >)
+		for refuel in vehicle.refuels {
+			let date = refuel.timestamp
 		
-		for monthDate in sortedMonthDates {
-			let formattedTitle = monthYearFormatter.string(from: monthDate)
-			let sortedRefuels = monthBuckets[monthDate]!.sorted(by: { $0.timestamp > $1.timestamp })
+			if calendar.isDateInToday(date) {
+				grouped["Today", default: []].append(refuel)
+			}
 			
-			finalSections.append(RefuelSection(title: formattedTitle, refuels: sortedRefuels))
+			else if calendar.isDateInYesterday(date) {
+				grouped["Yesterday", default: []].append(refuel)
+			}
+			
+			else if let daysAgo = calendar.dateComponents([.day], from: date, to: .now).day, daysAgo <= 30 {
+				grouped["Past 30 Days", default: []].append(refuel)
+			}
+			
+			else {
+				let monthYearString = monthYearFormatter.string(from: date)
+				grouped[monthYearString, default: []].append(refuel)
+			}
 		}
 		
-		self.filteredRefuels = finalSections
+		for (key, refuels) in grouped {
+			grouped[key] = refuels.sorted(by: { $0.timestamp > $1.timestamp })
+		}
+		
+		self.filteredRefuels = grouped
 	}
 }
