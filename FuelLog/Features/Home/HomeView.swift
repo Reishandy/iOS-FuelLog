@@ -34,9 +34,9 @@ struct HomeView: View {
 			} else {
 				CustomListView(groupedItem: homeViewModel.filteredVehicles) { vehicle in
 					NavigationLink (
-						value: AppRoute.vehicleDetail(vehicle.id)
+						value: AppRoute.vehicleDetail(vehicle.id.uuidString)
 					) {
-						VehicleListItemView(vehicle: vehicle, isDefault: vehicle.id == homeViewModel.defaultVehicle)
+						VehicleListItemView(vehicle: vehicle, isDefault: vehicle.id.uuidString == homeViewModel.defaultVehicle)
 							.swipeActions(edge: .trailing, allowsFullSwipe: false) {
 								Button {
 									homeViewModel.vehicleToDelete = vehicle
@@ -49,12 +49,12 @@ struct HomeView: View {
 								
 								
 								Button {
-									homeViewModel.defaultVehicle = vehicle.id
+									homeViewModel.defaultVehicle = vehicle.id.uuidString
 								} label: {
 									Image(systemName: "checkmark.circle.fill")
 									Text("Default")
 								}
-								.tint(vehicle.id == homeViewModel.defaultVehicle ? .blue : Color(UIColor.secondarySystemFill))
+								.tint(vehicle.id.uuidString == homeViewModel.defaultVehicle ? .blue : Color(UIColor.secondarySystemFill))
 							}
 							
 					}
@@ -129,7 +129,7 @@ struct HomeView: View {
 					isAddSheetPresented = false
 					
 					let newVehicle = homeViewModel.addVehicle()
-					router.navigate(to: AppRoute.vehicleDetail(newVehicle.id))
+					router.navigate(to: AppRoute.vehicleDetail(newVehicle.id.uuidString))
 				}
 			)
 			.navigationTransition(.zoom(sourceID: "addSheetSource", in: homeScreenNameSpace))
