@@ -20,13 +20,13 @@ class HomeViewModel {
 	var vehicleSortBy: VehicleSortBy = .timestampAsc { didSet { filterVehcile() } }
 	var vehicleSearchTerm: String = "" { didSet { filterVehcile() } }
 	var vehicleToDelete: Vehicle? = nil
-	var defaultVehicle: UUID? {
+	var defaultVehicle: String {
 		get {
 			preferences.defaultVehicle
 		}
 		set {
 			if preferences.defaultVehicle == newValue {
-				preferences.defaultVehicle = nil
+				preferences.defaultVehicle = ""
 			} else {
 				preferences.defaultVehicle = newValue
 			}

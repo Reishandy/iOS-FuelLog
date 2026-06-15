@@ -44,11 +44,11 @@ struct ContentView: View {
 			guard !hasHandledInitialNavigation else { return }
 			hasHandledInitialNavigation = true
 			
-			if let defaultVehicle = preferences.defaultVehicle {
+			if !preferences.defaultVehicle.isEmpty {
 				// TODO: Maybe find another smoother way?
 				try? await Task.sleep(for: .milliseconds(100))
 				
-				router.navigate(to: .vehicleDetail(defaultVehicle))
+				router.navigate(to: .vehicleDetail(preferences.defaultVehicle))
 			}
 		}
 	}

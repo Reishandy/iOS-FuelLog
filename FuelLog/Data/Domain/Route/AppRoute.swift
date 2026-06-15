@@ -9,5 +9,5 @@ import Foundation
 
 enum AppRoute: Hashable {
 	case home
-	case vehicleDetail(_ id: UUID)
+	case vehicleDetail(_ id: String)
 }
