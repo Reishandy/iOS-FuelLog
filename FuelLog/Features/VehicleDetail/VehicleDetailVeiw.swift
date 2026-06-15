@@ -25,10 +25,27 @@ struct VehicleDetailVeiw: View {
 						.opacity(0.7)
 				}
 			} else {
-				CustomListView(groupedItem: vehicleDetailViewModel.filteredRefuels) { refuel in
+				CustomListView(groupedItem: vehicleDetailViewModel.filteredRefuels, orderedHeader: vehicleDetailViewModel.sortedSectionKeys) { refuel in
 					Text(String(refuel.amount))
-					// TODO: DO something with thiss
+					// TODO: DO something with thiss and also the swipe action
 				}
+			}
+		}
+		.navigationTitle("Refuel")
+		.navigationBarTitleDisplayMode(.inline)
+		.toolbar {
+			ToolbarItem(placement: .bottomBar) {
+				Button {
+					// TODO: Navigate and different style?
+				} label: {
+					HStack {
+						Image(systemName: "camera")
+						
+						Text("Record Refueling")
+					}
+					.frame(maxWidth: .infinity)
+				}
+				.buttonStyle(.borderless)
 			}
 		}
 		.task {

@@ -10,13 +10,14 @@ import SwiftData
 
 struct CustomListView<T: Identifiable & Equatable, Content: View>: View {
 	var groupedItem: [String: [T]] = [:]
+	var orderedHeader: [String]? = nil
 	@ViewBuilder let content: (_ item: T) -> Content
 	
 	@State private var showDeleteConfirmation = false
 	
 	var body: some View {
 		List {
-			ForEach(groupedItem.keys.sorted(), id: \.self) { title in
+			ForEach(orderedHeader != nil ? orderedHeader ?? [] : groupedItem.keys.sorted(), id: \.self) { title in
 				Section {
 					ForEach(groupedItem[title] ?? []) { item in
 						content(item)

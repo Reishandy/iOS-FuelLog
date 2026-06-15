@@ -17,7 +17,7 @@ class VehicleDetailViewModel {
 	var filteredRefuels: [String: [Refuel]] = [:]
 	
 	var sortedSectionKeys: [String] {
-		let predefinedOrder = ["Today", "Yesterday", "Past 30 Days"]
+		let predefinedOrder = ["Today", "Yesterday", "Past 7 Days", "Past 30 Days"]
 		
 		let monthYearFormatter = DateFormatter()
 		monthYearFormatter.dateFormat = "MMMM yyyy"
@@ -74,19 +74,23 @@ class VehicleDetailViewModel {
 		
 		for refuel in vehicle.refuels {
 			let date = refuel.timestamp
-		
+			
 			if calendar.isDateInToday(date) {
 				grouped["Today", default: []].append(refuel)
 			}
-			
 			else if calendar.isDateInYesterday(date) {
 				grouped["Yesterday", default: []].append(refuel)
 			}
-			
-			else if let daysAgo = calendar.dateComponents([.day], from: date, to: .now).day, daysAgo <= 30 {
-				grouped["Past 30 Days", default: []].append(refuel)
+			else if let daysAgo = calendar.dateComponents([.day], from: date, to: .now).day {
+				if daysAgo <= 7 {
+					grouped["Past 7 Days", default: []].append(refuel)
+				} else if daysAgo <= 30 {
+					grouped["Past 30 Days", default: []].append(refuel)
+				} else {
+					let monthYearString = monthYearFormatter.string(from: date)
+					grouped[monthYearString, default: []].append(refuel)
+				}
 			}
-			
 			else {
 				let monthYearString = monthYearFormatter.string(from: date)
 				grouped[monthYearString, default: []].append(refuel)

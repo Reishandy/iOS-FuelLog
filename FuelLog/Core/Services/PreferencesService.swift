@@ -15,9 +15,13 @@ final class PreferencesService {
 		static let defaultVehicleSort = "defaultVehicleSort"
 	}
 	
-	var defaultVehicle: String {
+	var defaultVehicle: UUID? {
 		didSet {
-			UserDefaults.standard.set(defaultVehicle, forKey: Keys.defaultVehicle)
+			if let defaultVehicle {
+				UserDefaults.standard.set(defaultVehicle.uuidString, forKey: Keys.defaultVehicle)
+			} else {
+				UserDefaults.standard.removeObject(forKey: Keys.defaultVehicle)
+			}
 		}
 	}
 	
@@ -34,7 +38,12 @@ final class PreferencesService {
 	}
 	
 	init() {
-		self.defaultVehicle = UserDefaults.standard.string(forKey: Keys.defaultVehicle) ?? ""
+		if let uuidString = UserDefaults.standard.string(forKey: Keys.defaultVehicle),
+		   let savedUUID = UUID(uuidString: uuidString) {
+			self.defaultVehicle = savedUUID
+		} else {
+			self.defaultVehicle = nil
+		}
 		
 		let savedGroupString = UserDefaults.standard.string(forKey: Keys.defaultVehicleGroup) ?? ""
 		self.defaultVehicleGroup = VehicleGroupBy(rawValue: savedGroupString) ?? .vehicleType
