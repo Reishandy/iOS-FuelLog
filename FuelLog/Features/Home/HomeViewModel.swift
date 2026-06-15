@@ -11,14 +11,27 @@ import SwiftData
 @Observable
 class HomeViewModel {
 	private var modelContext: ModelContext
+	private var preferences: PreferencesService
 	private var vehicles: [Vehicle] = []
 	
 	var filteredVehicles: [String: [Vehicle]] = [:]
 	
-	var vehicleGroupBy: VehicleGroupBy = .vehivleType { didSet { filterVehcile() } }
+	var vehicleGroupBy: VehicleGroupBy = .vehicleType { didSet { filterVehcile() } }
 	var vehicleSortBy: VehicleSortBy = .timestampAsc { didSet { filterVehcile() } }
 	var vehicleSearchTerm: String = "" { didSet { filterVehcile() } }
 	var vehicleToDelete: Vehicle? = nil
+	var defaultVehicle: UUID? {
+		get {
+			preferences.defaultVehicle
+		}
+		set {
+			if preferences.defaultVehicle == newValue {
+				preferences.defaultVehicle = nil
+			} else {
+				preferences.defaultVehicle = newValue
+			}
+		}
+	}
 	
 	var addName: String = ""
 	var addBrand: String = ""
@@ -27,11 +40,12 @@ class HomeViewModel {
 	var addCapacity: Double = 0.0
 	var addType: VehicleType = .motorcycle
 	
-	init(modelContext: ModelContext) {
+	init(modelContext: ModelContext, preferences: PreferencesService) {
 		self.modelContext = modelContext
+		self.preferences = preferences
 		
-		// TODO: Saved filter preference
-		// TODO: Default vehicle
+		self.vehicleGroupBy = self.preferences.defaultVehicleGroup
+		self.vehicleSortBy = self.preferences.defaultVehicleSort
 	}
 	
 	func fetchData() {
@@ -43,19 +57,21 @@ class HomeViewModel {
 		}
 	}
 	
-	func addVehicle() {
-		self.modelContext.insert(
-			Vehicle(
-				name: self.addName,
-				brand: self.addBrand,
-				model: self.addBrand,
-				year: self.addYear,
-				tankCapacityLiter: self.addCapacity,
-				vehivleType: self.addType
-			)
+	func addVehicle() -> Vehicle {
+		let newVehicle = Vehicle(
+			name: self.addName,
+			brand: self.addBrand,
+			model: self.addBrand,
+			year: self.addYear,
+			tankCapacityLiter: self.addCapacity,
+			vehivleType: self.addType
 		)
+		
+		self.modelContext.insert(newVehicle)
 		self.fetchData()
 		self.clearAddVehicle()
+		
+		return newVehicle
 	}
 	
 	func deleteVehicle() {
@@ -104,7 +120,7 @@ class HomeViewModel {
 		switch self.vehicleGroupBy {
 		case .none:
 			groupedVehicles = ["": sortedVehicles]
-		case .vehivleType:
+		case .vehicleType:
 			groupedVehicles = Dictionary(grouping: sortedVehicles) { $0.vehivleType.rawValue }
 		case .vehicleBrand:
 			groupedVehicles = Dictionary(grouping: sortedVehicles) { $0.brand }

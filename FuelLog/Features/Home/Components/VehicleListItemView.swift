@@ -45,11 +45,6 @@ struct VehicleListItemView: View {
 				.font(.callout)
 				.opacity(0.7)
 				.padding(.leading, 20)
-			
-			Image(systemName: "chevron.right")
-				.font(.caption)
-				.opacity(0.5)
-				.padding(.leading, 6)
 		}
 	}
 }

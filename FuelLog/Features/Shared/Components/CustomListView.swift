@@ -34,7 +34,7 @@ struct CustomListView<T: Identifiable & Equatable, Content: View>: View {
 }
 
 #Preview {
-	let homeViewModel = HomeViewModel(modelContext: PreviewContainer.shared.mainContext)
+	let homeViewModel = HomeViewModel(modelContext: PreviewContainer.shared.mainContext, preferences: PreferencesService())
 	
 	CustomListView(groupedItem: homeViewModel.filteredVehicles) { vehicle in
 		VehicleListItemView(vehicle: vehicle)

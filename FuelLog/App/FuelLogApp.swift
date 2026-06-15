@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct FuelLogApp: App {
+	@State private var preferences = PreferencesService()
+	
     var body: some Scene {
         WindowGroup {
             ContentView()

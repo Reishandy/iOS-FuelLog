@@ -9,8 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-	@State private var router = NavigationRouter()
 	@Environment(\.modelContext) private var modelContext
+	@Environment(PreferencesService.self) private var preferences
+	
+	@State private var router = NavigationRouter()
+	@State private var hasHandledInitialNavigation = false
 	
 	// TODO: Main todo list
 	//	- animation
@@ -26,16 +29,27 @@ struct ContentView: View {
 	
 	var body: some View {
 		NavigationStack(path: $router.path) {
-			HomeView(homeViewModel: HomeViewModel(modelContext: modelContext))
+			HomeView(homeViewModel: HomeViewModel(modelContext: modelContext, preferences: preferences))
 				.environment(router)
 				.navigationDestination(for: AppRoute.self) { route in
 					switch route {
 					case .home:
-						HomeView(homeViewModel: HomeViewModel(modelContext: modelContext))
-					case .vehicleDetail(let vehicle):
-						Text("Detail for \(vehicle.name)")
+						HomeView(homeViewModel: HomeViewModel(modelContext: modelContext, preferences: preferences))
+					case .vehicleDetail(let vehicleId):
+						Text("Detail for \(vehicleId)")
 					}
 				}
+		}
+		.task {
+			guard !hasHandledInitialNavigation else { return }
+			hasHandledInitialNavigation = true
+			
+			if let defaultVehicle = preferences.defaultVehicle {
+				// TODO: Maybe find another smoother way?
+				try? await Task.sleep(for: .milliseconds(100))
+				
+				router.navigate(to: .vehicleDetail(defaultVehicle))
+			}
 		}
 	}
 }
@@ -43,4 +57,5 @@ struct ContentView: View {
 #Preview {
 	ContentView()
 		.modelContext(PreviewContainer.shared.mainContext)
+		.environment(PreferencesService())
 }

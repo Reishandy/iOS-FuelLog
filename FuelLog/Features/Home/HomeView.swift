@@ -33,10 +33,10 @@ struct HomeView: View {
 				}
 			} else {
 				CustomListView(groupedItem: homeViewModel.filteredVehicles) { vehicle in
-					Button {
-						router.navigate(to: .vehicleDetail(vehicle: vehicle))
-					} label: {
-						VehicleListItemView(vehicle: vehicle, isDefault: false) // TODO: isDefault
+					NavigationLink (
+						value: AppRoute.vehicleDetail(vehicle.id)
+					) {
+						VehicleListItemView(vehicle: vehicle, isDefault: vehicle.id == homeViewModel.defaultVehicle)
 							.swipeActions(edge: .trailing, allowsFullSwipe: false) {
 								Button {
 									homeViewModel.vehicleToDelete = vehicle
@@ -49,12 +49,12 @@ struct HomeView: View {
 								
 								
 								Button {
-									
+									homeViewModel.defaultVehicle = vehicle.id
 								} label: {
 									Image(systemName: "checkmark.circle.fill")
 									Text("Default")
 								}
-								.tint(.blue) // TODO: isDefault
+								.tint(vehicle.id == homeViewModel.defaultVehicle ? .blue : Color(UIColor.secondarySystemFill))
 							}
 							
 					}
@@ -70,17 +70,6 @@ struct HomeView: View {
 		.navigationTitle("Vehicles")
 		.toolbar {
 			ToolbarItem(placement: .topBarTrailing) {
-				Button("Settings", systemImage: "gearshape") {
-					isSettingsPresented.toggle()
-				}
-				.popover(isPresented: $isSettingsPresented) {
-					Text("TODO")
-						.frame(width: 400, height: 400)
-						.presentationCompactAdaptation(.popover)
-				}
-			}
-			
-			ToolbarItem(placement: .bottomBar) {
 				Menu {
 					Menu("Sort By") {
 						Picker("Sort By", selection: $homeViewModel.vehicleSortBy) {
@@ -99,6 +88,17 @@ struct HomeView: View {
 					}
 				} label: {
 					Label("Filter Vehicles", systemImage: "line.3.horizontal.decrease")
+				}
+			}
+			
+			ToolbarItem(placement: .topBarTrailing) {
+				Button("Settings", systemImage: "gearshape") {
+					isSettingsPresented.toggle()
+				}
+				.popover(isPresented: $isSettingsPresented) {
+					Text("TODO")
+						.frame(width: 400, height: 400)
+						.presentationCompactAdaptation(.popover)
 				}
 			}
 			
@@ -127,7 +127,9 @@ struct HomeView: View {
 				},
 				onSaveClick: {
 					isAddSheetPresented = false
-					homeViewModel.addVehicle()
+					
+					let newVehicle = homeViewModel.addVehicle()
+					router.navigate(to: AppRoute.vehicleDetail(newVehicle.id))
 				}
 			)
 			.navigationTransition(.zoom(sourceID: "addSheetSource", in: homeScreenNameSpace))
@@ -155,6 +157,6 @@ struct HomeView: View {
 
 #Preview {
 	NavigationStack	{
-		HomeView(homeViewModel: HomeViewModel(modelContext: PreviewContainer.shared.mainContext))
+		HomeView(homeViewModel: HomeViewModel(modelContext: PreviewContainer.shared.mainContext, preferences: PreferencesService()))
 	}
 }

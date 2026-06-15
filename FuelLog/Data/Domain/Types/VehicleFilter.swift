@@ -7,7 +7,7 @@
 
 enum VehicleGroupBy: String, CaseIterable {
 	case none = "None"
-	case vehivleType = "Type"
+	case vehicleType = "Type"
 	case vehicleBrand = "Brand"
 }
 
