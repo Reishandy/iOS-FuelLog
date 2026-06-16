@@ -5,6 +5,7 @@
 //  Created by Muhammad Akbar Reishandy on 15/06/26.
 //
 
+import Foundation
 import SwiftUI
 
 struct VehicleAddSheetView: View {
@@ -25,7 +26,7 @@ struct VehicleAddSheetView: View {
 	}
 	
 	private var isFormDirty: Bool {
-		!name.isEmpty || !brand.isEmpty || !model.isEmpty
+		!name.isEmpty || !brand.isEmpty || !model.isEmpty || year != Calendar.current.component(.year, from: Date()) || capacity != 0.0
 	}
 	
 	var body: some View {

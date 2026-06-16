@@ -81,6 +81,7 @@ class HomeViewModel {
 	func deleteVehicle() {
 		if let vehicleToDelete = self.vehicleToDelete {
 			modelContext.delete(vehicleToDelete)
+			try? modelContext.save()
 			
 			self.fetchData()
 			self.vehicleToDelete = nil
