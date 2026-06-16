@@ -16,6 +16,8 @@ struct RefuelFormView: View {
 	@Binding var fuelType: String
 	@Binding var timestamp: Date
 	
+	@Binding var isFormValid: Bool
+	
 	var fuelTypes: [String]
 	var onFieldUnfocus: ((RefuelFormField) -> Void)? = nil
 	
@@ -139,6 +141,8 @@ struct RefuelFormView: View {
 			if pricePerUnit != 0.0 {
 				pricePerUnitText = String(format: "%g", pricePerUnit)
 			}
+			
+			updateValidationAndSync()
 		}
 		.onChange(of: focusedField) { oldValue, newValue in
 			if let unfocusedField = oldValue {
@@ -161,6 +165,8 @@ struct RefuelFormView: View {
 		.onChange(of: pricePerUnit) { _, newValue in
 			syncDecimalText(for: newValue, textBinding: $pricePerUnitText)
 		}
+		.onChange(of: odometerText) { _, _ in updateValidationAndSync() }
+		.onChange(of: pricePerUnitText) { _, _ in updateValidationAndSync() }
     }
 	
 	private func updateAmountBinding() {
@@ -195,6 +201,19 @@ struct RefuelFormView: View {
 			textBinding.wrappedValue = newValue == 0.0 ? "" : String(format: "%g", newValue)
 		}
 	}
+	
+	private func updateValidationAndSync() {
+		let parsedOdo = Double(odometerText.replacingOccurrences(of: ",", with: ".")) ?? 0.0
+		if odometer != parsedOdo { odometer = parsedOdo }
+		
+		let parsedPrice = Double(pricePerUnitText.replacingOccurrences(of: ",", with: ".")) ?? 0.0
+		if pricePerUnit != parsedPrice { pricePerUnit = parsedPrice }
+		
+		let isOdoEmpty = odometerText.trimmingCharacters(in: .whitespaces).isEmpty
+		let isPriceEmpty = pricePerUnitText.trimmingCharacters(in: .whitespaces).isEmpty
+		
+		isFormValid = !isOdoEmpty && !isPriceEmpty
+	}
 }
 
 #Preview {
@@ -204,6 +223,7 @@ struct RefuelFormView: View {
 		pricePerUnit: .constant(0.0),
 		fuelType: .constant(""),
 		timestamp: .constant(.now),
+		isFormValid: .constant(false),
 		fuelTypes: ["Pertamax", "Pertalite"]
 	)
 	.environment(PreferencesService())

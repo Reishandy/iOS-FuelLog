@@ -20,6 +20,7 @@ struct RefuelEditSheetView: View {
 	@State private var timestamp: Date
 	
 	@State private var isDismissConfirmationShown: Bool = false
+	@State private var isFormValid: Bool = true
 	
 	init(
 		refuel: Refuel,
@@ -53,6 +54,7 @@ struct RefuelEditSheetView: View {
 				pricePerUnit: $pricePerUnit,
 				fuelType: $fuelType,
 				timestamp: $timestamp,
+				isFormValid: $isFormValid,
 				fuelTypes: fuelTypes,
 				onFieldUnfocus: { field in
 					switch field {
@@ -101,6 +103,7 @@ struct RefuelEditSheetView: View {
 						
 						onDismissClick()
 					}
+					.disabled(!isFormValid)
 				}
 			}
 		}

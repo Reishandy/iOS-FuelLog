@@ -15,13 +15,10 @@ struct RefuelAddSheetView: View {
 	@Binding var timestamp: Date
 	
 	let fuelTypes: [String]
-	
 	let onDismissClick: () -> Void
 	let onSaveClick: () -> Void
 	
-	private var isFormFilled: Bool {
-		odometer != 0.0 && pricePerUnit != 0.0
-	}
+	@State private var isFormValid: Bool = false
 	
 	var body: some View {
 		NavigationStack {
@@ -31,6 +28,7 @@ struct RefuelAddSheetView: View {
 				pricePerUnit: $pricePerUnit,
 				fuelType: $fuelType,
 				timestamp: $timestamp,
+				isFormValid: $isFormValid,
 				fuelTypes: fuelTypes
 			)
 			.navigationTitle("Add New Vehicle")
@@ -46,7 +44,7 @@ struct RefuelAddSheetView: View {
 					Button("Save", systemImage: "checkmark") {
 						onSaveClick()
 					}
-					.disabled(!isFormFilled)
+					.disabled(!isFormValid)
 				}
 			}
 		}
