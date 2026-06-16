@@ -84,6 +84,10 @@ class HomeViewModel {
 			
 			self.fetchData()
 			self.vehicleToDelete = nil
+			
+			if defaultVehicle == vehicleToDelete.id {
+				defaultVehicle = nil
+			}
 		}
 	}
 	
