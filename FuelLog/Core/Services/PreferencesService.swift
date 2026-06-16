@@ -13,6 +13,8 @@ final class PreferencesService {
 		static let defaultVehicle = "defaultVehicle"
 		static let defaultVehicleGroup = "defaultVehicleGroup"
 		static let defaultVehicleSort = "defaultVehicleSort"
+		static let currency = "currency"
+		static let measurementUnit = "measurementUnit"
 	}
 	
 	var defaultVehicle: UUID? {
@@ -37,6 +39,18 @@ final class PreferencesService {
 		}
 	}
 	
+	var currency: Currency {
+		didSet {
+			UserDefaults.standard.set(currency.rawValue, forKey: Keys.currency)
+		}
+	}
+	
+	var measurementUnit: MeasurmentUnit {
+		didSet {
+			UserDefaults.standard.set(measurementUnit.rawValue, forKey: Keys.measurementUnit)
+		}
+	}
+	
 	init() {
 		if let uuidString = UserDefaults.standard.string(forKey: Keys.defaultVehicle),
 		   let savedUUID = UUID(uuidString: uuidString) {
@@ -50,5 +64,25 @@ final class PreferencesService {
 		
 		let savedSortString = UserDefaults.standard.string(forKey: Keys.defaultVehicleSort) ?? ""
 		self.defaultVehicleSort = VehicleSortBy(rawValue: savedSortString) ?? .timestampAsc
+		
+		if let savedCurrencyString = UserDefaults.standard.string(forKey: Keys.currency),
+		   let savedCurrency = Currency(rawValue: savedCurrencyString) {
+			self.currency = savedCurrency
+		} else {
+			if let deviceCode = Locale.current.currency?.identifier,
+			   let matchedEnum = Currency(rawValue: deviceCode) {
+				self.currency = matchedEnum
+			} else {
+				self.currency = .usd
+			}
+		}
+		
+		if let savedUnitString = UserDefaults.standard.string(forKey: Keys.measurementUnit),
+		   let savedUnit = MeasurmentUnit(rawValue: savedUnitString) {
+			self.measurementUnit = savedUnit
+		} else {
+			let system = Locale.current.measurementSystem
+			self.measurementUnit = system == .metric ? .metric : .imperial
+		}
 	}
 }

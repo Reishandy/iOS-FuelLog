@@ -15,17 +15,17 @@ class Refuel: Identifiable, Equatable {
 	
 	var odometer: Double
 	var amount: Double
-	var pricePerLiter: Double
+	var pricePerUnit: Double
 	var fuelType: String?
 	
 	var vehicle: Vehicle?
 	
-	init(odometer: Double, amount: Double, pricePerLiter: Double, fuelType: String? = nil, vehicle: Vehicle? = nil, timestamp: Date = .now) {
+	init(odometer: Double, amount: Double, pricePerUnit: Double, fuelType: String? = nil, vehicle: Vehicle? = nil, timestamp: Date = .now) {
 		self.id = UUID()
 		self.timestamp = timestamp
 		self.odometer = odometer
 		self.amount = amount
-		self.pricePerLiter = pricePerLiter
+		self.pricePerUnit = pricePerUnit
 		self.fuelType = fuelType
 		self.vehicle = vehicle
 	}
@@ -35,6 +35,6 @@ class Refuel: Identifiable, Equatable {
 	}
 	
 	var totalPrice: Double {
-		amount * pricePerLiter
+		amount * pricePerUnit
 	}
 }

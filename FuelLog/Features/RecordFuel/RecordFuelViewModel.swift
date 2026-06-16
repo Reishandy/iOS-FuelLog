@@ -18,14 +18,14 @@ class RecordFuelViewModel {
 	
 	var addOdometer: Double = 0.0
 	var addAmount: Double = 0.0
-	var addPricePerLiter: Double = 0.0
+	var addPricePerUnit: Double = 0.0
 	var addFuelType: String = ""
 	var addTimestamp: Date = .now
 	
 	var isAddFormDirty: Bool {
 		self.addOdometer != 0.0 ||
 		self.addAmount != 0.0 ||
-		self.addPricePerLiter != 0.0
+		self.addPricePerUnit != 0.0
 	}
 	
 	init(modelContext: ModelContext, vehicleId: UUID) {
@@ -56,7 +56,7 @@ class RecordFuelViewModel {
 		let newRefeul = Refuel(
 			odometer: self.addOdometer,
 			amount: self.addAmount,
-			pricePerLiter: self.addPricePerLiter,
+			pricePerUnit: self.addPricePerUnit,
 			fuelType: self.addFuelType.isEmpty ? nil : self.addFuelType,
 			timestamp: self.addTimestamp
 		)
@@ -69,7 +69,7 @@ class RecordFuelViewModel {
 	func clearAddRefuel() {
 		self.addOdometer = 0.0
 		self.addAmount = 0.0
-		self.addPricePerLiter = 0.0
+		self.addPricePerUnit = 0.0
 		self.addFuelType = ""
 		self.addTimestamp = .now
 	}

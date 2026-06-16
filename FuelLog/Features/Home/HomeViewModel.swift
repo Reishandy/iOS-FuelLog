@@ -36,6 +36,22 @@ class HomeViewModel {
 			}
 		}
 	}
+	var currency: Currency {
+		get {
+			preferences.currency
+		}
+		set {
+			preferences.currency = newValue
+		}
+	}
+	var measurementUnit: MeasurmentUnit {
+		get {
+			preferences.measurementUnit
+		}
+		set {
+			preferences.measurementUnit = newValue
+		}
+	}
 	
 	var addName: String = ""
 	var addBrand: String = ""
@@ -67,7 +83,7 @@ class HomeViewModel {
 			brand: self.addBrand,
 			model: self.addModel,
 			year: self.addYear,
-			tankCapacityLiter: self.addCapacity,
+			tankCapacity: self.addCapacity,
 			vehicleType: self.addType
 		)
 		

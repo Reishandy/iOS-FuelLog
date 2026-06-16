@@ -19,7 +19,7 @@ class PreviewContainer {
 				brand: "Honda",
 				model: "PCX 160",
 				year: 2024,
-				tankCapacityLiter: 8.1,
+				tankCapacity: 8.1,
 				vehicleType: .motorcycle
 			)
 			
@@ -28,7 +28,7 @@ class PreviewContainer {
 				brand: "Honda",
 				model: "Vario 125",
 				year: 2020,
-				tankCapacityLiter: 5.5,
+				tankCapacity: 5.5,
 				vehicleType: .motorcycle
 			)
 			
@@ -37,7 +37,7 @@ class PreviewContainer {
 				brand: "Honda",
 				model: "Brio RS",
 				year: 2021,
-				tankCapacityLiter: 35.0,
+				tankCapacity: 35.0,
 				vehicleType: .car
 			)
 			
@@ -46,7 +46,7 @@ class PreviewContainer {
 				brand: "Toyota",
 				model: "Kijang Innova 2.5 G",
 				year: 2007,
-				tankCapacityLiter: 55.0,
+				tankCapacity: 55.0,
 				vehicleType: .car
 			)
 			
@@ -60,7 +60,7 @@ class PreviewContainer {
 				startOdometer: Double,
 				kmPerLiter: Double,
 				avgLiters: Double,
-				pricePerLiter: Double,
+				pricePerUnit: Double,
 				fuelType: String,
 				daysAgoList: [Int]
 			) {
@@ -74,7 +74,7 @@ class PreviewContainer {
 					let refuel = Refuel(
 						odometer: currentOdo,
 						amount: liters,
-						pricePerLiter: pricePerLiter,
+						pricePerUnit: pricePerUnit,
 						fuelType: fuelType,
 						vehicle: vehicle
 					)
@@ -91,7 +91,7 @@ class PreviewContainer {
 				startOdometer: 2000,
 				kmPerLiter: 39.5,
 				avgLiters: 6.0,
-				pricePerLiter: 12950,
+				pricePerUnit: 12950,
 				fuelType: "Pertamax",
 				daysAgoList: [89, 84, 80, 75, 71, 66, 62, 57, 53, 49, 44, 40, 35, 31, 26, 22, 18, 13, 9, 4, 1]
 			)
@@ -101,7 +101,7 @@ class PreviewContainer {
 				startOdometer: 14500,
 				kmPerLiter: 45.0,
 				avgLiters: 4.2,
-				pricePerLiter: 10000,
+				pricePerUnit: 10000,
 				fuelType: "Pertalite",
 				daysAgoList: [88, 79, 70, 62, 53, 44, 35, 26, 17, 8, 2]
 			)
@@ -111,7 +111,7 @@ class PreviewContainer {
 				startOdometer: 30000,
 				kmPerLiter: 12.5,
 				avgLiters: 27.0,
-				pricePerLiter: 12950,
+				pricePerUnit: 12950,
 				fuelType: "Pertamax",
 				daysAgoList: [90, 83, 76, 69, 62, 55, 48, 41, 34, 27, 20, 13, 6]
 			)
@@ -121,7 +121,7 @@ class PreviewContainer {
 				startOdometer: 248000,
 				kmPerLiter: 10.0,
 				avgLiters: 45.0,
-				pricePerLiter: 6800,
+				pricePerUnit: 6800,
 				fuelType: "Biosolar",
 				daysAgoList: [85, 70, 55, 35, 20, 5]
 			)

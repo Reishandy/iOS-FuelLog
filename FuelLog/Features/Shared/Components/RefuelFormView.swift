@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct RefuelFormView: View {
+	@Environment(PreferencesService.self) private var preferences
+	
 	@Binding var odometer: Double
 	@Binding var amount: Double
-	@Binding var pricePerLiter: Double
+	@Binding var pricePerUnit: Double
 	@Binding var fuelType: String
 	@Binding var timestamp: Date
 	
@@ -20,11 +22,10 @@ struct RefuelFormView: View {
 	@State private var wholeCapacity: Int = 0
 	@State private var decimalCapacity: Int = 0
 	@State private var odometerText: String = ""
-	@State private var pricePerLiterText: String = ""
+	@State private var pricePerUnitText: String = ""
 	
 	@FocusState private var focusedField: RefuelFormField?
 	
-	// TODO: Locale
 	// TODO: Switch for total price
     var body: some View {
 		Form {
@@ -35,7 +36,7 @@ struct RefuelFormView: View {
 							.keyboardType(.decimalPad)
 							.focused($focusedField, equals: .odometer)
 					
-						Text("Km")
+						Text(preferences.measurementUnit == .metric ? "Km" : "mi")
 							.font(.subheadline)
 							.opacity(0.6)
 					}
@@ -45,7 +46,7 @@ struct RefuelFormView: View {
 						
 						Spacer()
 						
-						Text("Liters")
+						Text(preferences.measurementUnit == .metric ? "Liters" : "Gallons")
 							.font(.subheadline)
 							.opacity(0.6)
 					}
@@ -88,15 +89,15 @@ struct RefuelFormView: View {
 			Section {
 				VStack(spacing: 20) {
 					HStack {
-						Text("Rp")
+						Text(preferences.currency.symbol)
 							.font(.subheadline)
 							.opacity(0.6)
 						
-						TextField("Price", text: $pricePerLiterText)
+						TextField("Price", text: $pricePerUnitText)
 							.keyboardType(.decimalPad)
-							.focused($focusedField, equals: .pricePerLiter)
+							.focused($focusedField, equals: .pricePerUnit)
 						
-						Text("/ Liter")
+						Text("/ \(preferences.measurementUnit == .metric ? "Liter" : "Gallon")")
 							.font(.subheadline)
 							.opacity(0.6)
 					}
@@ -135,8 +136,8 @@ struct RefuelFormView: View {
 				odometerText = String(format: "%g", odometer)
 			}
 			
-			if pricePerLiter != 0.0 {
-				pricePerLiterText = String(format: "%g", pricePerLiter)
+			if pricePerUnit != 0.0 {
+				pricePerUnitText = String(format: "%g", pricePerUnit)
 			}
 		}
 		.onChange(of: focusedField) { oldValue, newValue in
@@ -145,8 +146,8 @@ struct RefuelFormView: View {
 				switch unfocusedField {
 				case .odometer:
 					commitDecimalField(text: $odometerText, to: $odometer)
-				case .pricePerLiter:
-					commitDecimalField(text: $pricePerLiterText, to: $pricePerLiter)
+				case .pricePerUnit:
+					commitDecimalField(text: $pricePerUnitText, to: $pricePerUnit)
 				}
 				
 				DispatchQueue.main.async {
@@ -157,8 +158,8 @@ struct RefuelFormView: View {
 		.onChange(of: odometer) { _, newValue in
 			syncDecimalText(for: newValue, textBinding: $odometerText)
 		}
-		.onChange(of: pricePerLiter) { _, newValue in
-			syncDecimalText(for: newValue, textBinding: $pricePerLiterText)
+		.onChange(of: pricePerUnit) { _, newValue in
+			syncDecimalText(for: newValue, textBinding: $pricePerUnitText)
 		}
     }
 	
@@ -200,9 +201,10 @@ struct RefuelFormView: View {
     RefuelFormView(
 		odometer: .constant(0.0),
 		amount: .constant(0.0),
-		pricePerLiter: .constant(0.0),
+		pricePerUnit: .constant(0.0),
 		fuelType: .constant(""),
 		timestamp: .constant(.now),
 		fuelTypes: ["Pertamax", "Pertalite"]
 	)
+	.environment(PreferencesService())
 }

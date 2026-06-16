@@ -10,7 +10,7 @@ import SwiftUI
 struct RefuelAddSheetView: View {
 	@Binding var odometer: Double
 	@Binding var amount: Double
-	@Binding var pricePerLiter: Double
+	@Binding var pricePerUnit: Double
 	@Binding var fuelType: String
 	@Binding var timestamp: Date
 	
@@ -20,7 +20,7 @@ struct RefuelAddSheetView: View {
 	let onSaveClick: () -> Void
 	
 	private var isFormFilled: Bool {
-		odometer != 0.0 && pricePerLiter != 0.0
+		odometer != 0.0 && pricePerUnit != 0.0
 	}
 	
 	var body: some View {
@@ -28,7 +28,7 @@ struct RefuelAddSheetView: View {
 			RefuelFormView(
 				odometer: $odometer,
 				amount: $amount,
-				pricePerLiter: $pricePerLiter,
+				pricePerUnit: $pricePerUnit,
 				fuelType: $fuelType,
 				timestamp: $timestamp,
 				fuelTypes: fuelTypes
@@ -58,7 +58,7 @@ struct RefuelAddSheetView: View {
 	RefuelAddSheetView(
 		odometer: .constant(0.0),
 		amount: .constant(0.0),
-		pricePerLiter: .constant(0.0),
+		pricePerUnit: .constant(0.0),
 		fuelType: .constant(""),
 		timestamp: .constant(.now),
 		fuelTypes: [],

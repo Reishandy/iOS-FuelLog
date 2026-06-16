@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct RefuelListItemView: View {
+	@Environment(PreferencesService.self) private var preferences
+	
 	let refuel: Refuel
 	
     var body: some View {
 		HStack(alignment: .center) {
 			VStack(alignment: .leading) {
-				// TODO: Use locale for currency
-				Text(refuel.totalPrice.formatted(.currency(code: "IDR")))
+				Text(refuel.totalPrice.formatted(.currency(code: preferences.currency.rawValue)))
 					.lineLimit(1)
 				
 				Text(refuel.formattedTimestamp)
@@ -26,8 +27,7 @@ struct RefuelListItemView: View {
 			Spacer()
 			
 			VStack(alignment: .trailing) {
-				// TODO: Use locale for unit
-				Text("\(refuel.amount.formatted(.number.precision(.fractionLength(1)))) L")
+				Text("\(refuel.amount.formatted(.number.precision(.fractionLength(1)))) \(preferences.measurementUnit == .metric ? "L" : "gal")")
 					.lineLimit(1)
 				
 				Text(refuel.fuelType ?? "")
@@ -40,5 +40,6 @@ struct RefuelListItemView: View {
 }
 
 #Preview {
-	RefuelListItemView(refuel: Refuel(odometer: 1000.0, amount: 4.5, pricePerLiter: 12300, fuelType: "Pertamax"))
+	RefuelListItemView(refuel: Refuel(odometer: 1000.0, amount: 4.5, pricePerUnit: 12300, fuelType: "Pertamax"))
+		.environment(PreferencesService())
 }

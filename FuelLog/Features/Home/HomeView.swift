@@ -16,7 +16,6 @@ struct HomeView: View {
 	
 	@State private var isAddSheetPresented: Bool = false
 	@State private var isEditSheetPresented: Bool = false
-	@State private var isSettingsPresented: Bool = false
 	@State private var isDeleteConfirmmationPresented: Bool = false
 	
 	var body: some View {
@@ -118,14 +117,24 @@ struct HomeView: View {
 			}
 			
 			ToolbarItem(placement: .topBarTrailing) {
-				Button("Settings", systemImage: "gearshape") {
-					isSettingsPresented.toggle()
-				}
-				.popover(isPresented: $isSettingsPresented) {
-					// TODO: Make the width infinity with padding
-					Text("TODO")
-						.frame(width: 300, height: 300)
-						.presentationCompactAdaptation(.popover)
+				Menu {
+					Menu("Currency") {
+						Picker("Currency", selection: $homeViewModel.currency) {
+							ForEach(Currency.allCases, id: \.self) { option in
+								Text(option.displayName).tag(option)
+							}
+						}
+					}
+					
+					Menu("Unit of Measurment") {
+						Picker("Unit of Measurment", selection: $homeViewModel.measurementUnit) {
+							ForEach(MeasurmentUnit.allCases, id: \.self) { option in
+								Text(option.rawValue).tag(option)
+							}
+						}
+					}
+				} label: {
+					Label("Settings", systemImage: "gearshape")
 				}
 			}
 			

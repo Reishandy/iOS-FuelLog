@@ -15,7 +15,7 @@ struct RefuelEditSheetView: View {
 	
 	@State private var odometer: Double
 	@State private var amount: Double
-	@State private var pricePerLiter: Double
+	@State private var pricePerUnit: Double
 	@State private var fuelType: String
 	@State private var timestamp: Date
 	
@@ -32,7 +32,7 @@ struct RefuelEditSheetView: View {
 		
 		self.odometer = refuel.odometer
 		self.amount = refuel.amount
-		self.pricePerLiter = refuel.pricePerLiter
+		self.pricePerUnit = refuel.pricePerUnit
 		self.fuelType = refuel.fuelType ?? ""
 		self.timestamp = refuel.timestamp
 	}
@@ -40,7 +40,7 @@ struct RefuelEditSheetView: View {
 	var isFormDirty: Bool {
 		self.refuel.odometer != self.odometer ||
 		self.refuel.amount != self.amount ||
-		self.refuel.pricePerLiter != self.pricePerLiter ||
+		self.refuel.pricePerUnit != self.pricePerUnit ||
 		(self.refuel.fuelType ?? "") != self.fuelType ||
 		self.refuel.timestamp != self.timestamp
 	}
@@ -50,7 +50,7 @@ struct RefuelEditSheetView: View {
 			RefuelFormView(
 				odometer: $odometer,
 				amount: $amount,
-				pricePerLiter: $pricePerLiter,
+				pricePerUnit: $pricePerUnit,
 				fuelType: $fuelType,
 				timestamp: $timestamp,
 				fuelTypes: fuelTypes,
@@ -60,9 +60,9 @@ struct RefuelEditSheetView: View {
 						if odometer == 0.0 {
 							odometer = refuel.odometer
 						}
-					case .pricePerLiter:
-						if pricePerLiter == 0.0 {
-							pricePerLiter = refuel.pricePerLiter
+					case .pricePerUnit:
+						if pricePerUnit == 0.0 {
+							pricePerUnit = refuel.pricePerUnit
 						}
 					}
 				}
@@ -95,7 +95,7 @@ struct RefuelEditSheetView: View {
 					Button("Save", systemImage: "checkmark") {
 						refuel.odometer = odometer
 						refuel.amount = amount
-						refuel.pricePerLiter = pricePerLiter
+						refuel.pricePerUnit = pricePerUnit
 						refuel.fuelType = fuelType.isEmpty ? nil : fuelType
 						refuel.timestamp = timestamp
 						
@@ -119,7 +119,7 @@ struct RefuelEditSheetView: View {
 		RefuelEditSheetView(refuel: refuel, fuelTypes: ["Pertamax", "Pertalite"]) {}
 	} else {
 		RefuelEditSheetView(
-			refuel: Refuel(odometer: 15000, amount: 25.5, pricePerLiter: 10000),
+			refuel: Refuel(odometer: 15000, amount: 25.5, pricePerUnit: 10000),
 			fuelTypes: ["Pertamax", "Pertalite"]
 		) {}
 	}

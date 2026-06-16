@@ -97,7 +97,7 @@ struct RecordFuelView: View {
 			RefuelAddSheetView(
 				odometer: $recordFuelViewModel.addOdometer,
 				amount: $recordFuelViewModel.addAmount,
-				pricePerLiter: $recordFuelViewModel.addPricePerLiter,
+				pricePerUnit: $recordFuelViewModel.addPricePerUnit,
 				fuelType: $recordFuelViewModel.addFuelType,
 				timestamp: $recordFuelViewModel.addTimestamp,
 				fuelTypes: recordFuelViewModel.fuelTypes,

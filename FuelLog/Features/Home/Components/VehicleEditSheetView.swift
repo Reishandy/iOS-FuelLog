@@ -32,7 +32,7 @@ struct VehicleEditSheetView: View {
 		self.brand = vehicle.brand
 		self.model = vehicle.model
 		self.year = vehicle.year
-		self.capacity = vehicle.tankCapacityLiter
+		self.capacity = vehicle.tankCapacity
 		self.type = vehicle.vehicleType
 	}
 	
@@ -41,7 +41,7 @@ struct VehicleEditSheetView: View {
 		self.vehicle.brand != self.brand ||
 		self.vehicle.model != self.model ||
 		self.vehicle.year != self.year ||
-		self.vehicle.tankCapacityLiter != self.capacity ||
+		self.vehicle.tankCapacity != self.capacity ||
 		self.vehicle.vehicleType != self.type
 	}
 	
@@ -101,7 +101,7 @@ struct VehicleEditSheetView: View {
 						vehicle.brand = brand
 						vehicle.model = model
 						vehicle.year = year
-						vehicle.tankCapacityLiter = capacity
+						vehicle.tankCapacity = capacity
 						vehicle.vehicleType = type
 						
 						onDismissClick()
