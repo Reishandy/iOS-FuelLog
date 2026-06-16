@@ -65,7 +65,7 @@ class HomeViewModel {
 		let newVehicle = Vehicle(
 			name: self.addName,
 			brand: self.addBrand,
-			model: self.addBrand,
+			model: self.addModel,
 			year: self.addYear,
 			tankCapacityLiter: self.addCapacity,
 			vehicleType: self.addType

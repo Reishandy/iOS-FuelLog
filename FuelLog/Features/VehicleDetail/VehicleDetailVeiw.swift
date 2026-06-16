@@ -134,7 +134,7 @@ struct VehicleDetailVeiw: View {
 	
 	let firstVehicleId = vehicles?.first?.id ?? UUID()
 	
-	return NavigationStack {
+	NavigationStack {
 		VehicleDetailVeiw(
 			vehicleDetailViewModel: VehicleDetailViewModel(
 				modelContext: context,

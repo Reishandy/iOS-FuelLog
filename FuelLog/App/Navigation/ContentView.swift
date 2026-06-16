@@ -61,8 +61,10 @@ private struct AppNavigationView: View {
 						vehicleId: vehicleId
 					))
 				case .recordFuel(let vehicleId):
-					// TODO: ViewModel
-					RecordFuelView()
+					RecordFuelView(recordFuelViewModel: RecordFuelViewModel(
+						modelContext: modelContext,
+						vehicleId: vehicleId
+					))
 				}
 			}
 		}
