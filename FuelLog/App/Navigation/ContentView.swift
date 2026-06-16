@@ -12,9 +12,6 @@ struct ContentView: View {
 	@Environment(\.modelContext) private var modelContext
 	@Environment(PreferencesService.self) private var preferences
 	
-	@State private var router = NavigationRouter()
-	@State private var hasHandledInitialNavigation = false
-	
 	// TODO: Main todo list
 	//	- animation
 	//	- currency
@@ -28,27 +25,43 @@ struct ContentView: View {
 	//	- Not navigating on the spacer place only on content for the list
 	
 	var body: some View {
+		AppNavigationView(initialVehicleId: preferences.defaultVehicle)
+	}
+}
+
+private struct AppNavigationView: View {
+	@Environment(\.modelContext) private var modelContext
+	@Environment(PreferencesService.self) private var preferences
+	
+	@State private var router: NavigationRouter
+	
+	init(initialVehicleId: UUID?) {
+		let initialPath = initialVehicleId
+			.map { NavigationPath([AppRoute.vehicleDetail($0)]) }
+		?? NavigationPath()
+		_router = State(wrappedValue: NavigationRouter(path: initialPath))
+	}
+	
+	var body: some View {
 		NavigationStack(path: $router.path) {
-			HomeView(homeViewModel: HomeViewModel(modelContext: modelContext, preferences: preferences))
-				.environment(router)
-				.navigationDestination(for: AppRoute.self) { route in
-					switch route {
-					case .home:
-						HomeView(homeViewModel: HomeViewModel(modelContext: modelContext, preferences: preferences))
-					case .vehicleDetail(let vehicleId):
-						VehicleDetailVeiw(vehicleDetailViewModel: VehicleDetailViewModel(modelContext: modelContext, vehicleId: vehicleId))
-					}
+			HomeView(homeViewModel: HomeViewModel(
+				modelContext: modelContext,
+				preferences: preferences
+			))
+			.environment(router)
+			.navigationDestination(for: AppRoute.self) { route in
+				switch route {
+				case .home:
+					HomeView(homeViewModel: HomeViewModel(
+						modelContext: modelContext,
+						preferences: preferences
+					))
+				case .vehicleDetail(let vehicleId):
+					VehicleDetailVeiw(vehicleDetailViewModel: VehicleDetailViewModel(
+						modelContext: modelContext,
+						vehicleId: vehicleId
+					))
 				}
-		}
-		.task {
-			guard !hasHandledInitialNavigation else { return }
-			hasHandledInitialNavigation = true
-			
-			if let defaultVehicle = preferences.defaultVehicle {
-				// TODO: Maybe find another smoother way?
-				try? await Task.sleep(for: .milliseconds(100))
-				
-				router.navigate(to: .vehicleDetail(defaultVehicle))
 			}
 		}
 	}

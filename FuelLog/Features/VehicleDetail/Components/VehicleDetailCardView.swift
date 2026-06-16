@@ -37,6 +37,7 @@ struct VehicleDetailCardView: View {
 					
 					DetailListItemView(title: "Distance tracked", value: vehicle.totalDistanceTracked)
 				}
+				.scrollDisabled(true)
 				.padding(-20)
 			} else {
 				Spacer()

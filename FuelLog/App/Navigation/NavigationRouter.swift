@@ -11,6 +11,10 @@ import SwiftUI
 class NavigationRouter {
 	var path = NavigationPath()
 	
+	init(path: NavigationPath = NavigationPath()) {
+		self.path = path
+	}
+	
 	func navigate(to route: AppRoute) {
 		path.append(route)
 	}
