@@ -131,12 +131,14 @@ struct HomeView: View {
 			
 			DefaultToolbarItem(kind: .search, placement: .bottomBar)
 			
-			ToolbarSpacer(placement: .bottomBar)
-			
 			ToolbarItem(placement: .bottomBar) {
-				Button("Add Vehicle", systemImage: "plus") {
+				Button {
 					isAddSheetPresented.toggle()
+				} label: {
+					Image(systemName: "plus")
+						.foregroundStyle(.white)
 				}
+				.buttonStyle(.glassProminent)
 				.matchedTransitionSource(id: "addSheetSource", in: homeScreenNameSpace)
 			}
 		}

@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-	@Environment(\.modelContext) private var modelContext
 	@Environment(PreferencesService.self) private var preferences
 	
 	// TODO: Main todo list
@@ -61,6 +60,9 @@ private struct AppNavigationView: View {
 						modelContext: modelContext,
 						vehicleId: vehicleId
 					))
+				case .recordFuel(let vehicleId):
+					// TODO: ViewModel
+					RecordFuelView()
 				}
 			}
 		}

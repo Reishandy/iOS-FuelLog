@@ -82,13 +82,16 @@ struct VehicleDetailVeiw: View {
 		}
 		.frame(maxHeight: .infinity, alignment: .top)
 		.toolbar {
-			ToolbarSpacer(placement: .bottomBar)
-			
-			ToolbarItem(placement: .bottomBar) {
-				Button("Record Refuel", systemImage: "plus") {
-					// TODO: Move with zoom transition?
+			if let vehicle = vehicleDetailViewModel.vehicle {
+				ToolbarSpacer(placement: .bottomBar)
+				
+				ToolbarItem(placement: .bottomBar) {
+					NavigationLink(value: AppRoute.recordFuel(vehicle.id)) {
+						Image(systemName: "plus")
+							.foregroundStyle(.white)
+					}
+					.buttonStyle(.glassProminent)
 				}
-				// TODO: Make this glass prominent
 			}
 		}
 		.sheet(isPresented: $isDetailPresented) {
