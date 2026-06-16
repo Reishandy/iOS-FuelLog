@@ -9,16 +9,10 @@ import SwiftUI
 import SwiftData
 
 struct VehicleDetailVeiw: View {
-	@Environment(\.editMode) private var editMode
-	
 	@State var vehicleDetailViewModel: VehicleDetailViewModel
 	
 	@State private var isRefuelDetailPresented: Bool = false
 	@State private var isDeleteConfirmmationPresented: Bool = false
-	
-	private var isEdit: Bool {
-		editMode?.wrappedValue == .active
-	}
 	
     var body: some View {
 		ZStack(alignment: .top) {
@@ -55,38 +49,28 @@ struct VehicleDetailVeiw: View {
 									isRefuelDetailPresented = true
 								} label: {
 									Image(systemName: "info")
-									Text("Detail")
+									Text("Details")
 								}
-								.tint(.blue)
 							}
 					}
 				}
 			}
 			.safeAreaPadding(.top, 190)
 			
-			// TODO: Vehicle detail
-			// TODO: Vehicle edit
-			Text(vehicleDetailViewModel.vehicle?.name ?? "TODO")
-				.frame(maxWidth: .infinity)
-				.frame(height: 150)
-				.glassEffect(in: RoundedRectangle(cornerRadius: 25))
-				.padding(.top, 20)
-				.padding(.horizontal, 20)
+			if let vehicle = vehicleDetailViewModel.vehicle {
+				VehicleDetailCardView(vehicle: vehicle)
+					.padding(20)
+			}
 		}
 		.frame(maxHeight: .infinity, alignment: .top)
-		.navigationTitle("Refuel")
-		.navigationBarTitleDisplayMode(.inline)
 		.toolbar {
-			ToolbarItem(placement: .navigationBarTrailing) {
-				EditButton()
-			}
-			
 			ToolbarSpacer(placement: .bottomBar)
 			
 			ToolbarItem(placement: .bottomBar) {
 				Button("Record Refuel", systemImage: "plus") {
 					// TODO: Move with zoom transition?
 				}
+				// TODO: Make this glass prominent
 			}
 		}
 		.sheet(isPresented: $isRefuelDetailPresented) {

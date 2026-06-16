@@ -124,7 +124,8 @@ struct VehicleFormView: View {
 					}
 				}
 			}
-		}	
+		}
+		.listSectionSpacing(.custom(20))
 	}
 	
 	private func updateCapacityBinding() {

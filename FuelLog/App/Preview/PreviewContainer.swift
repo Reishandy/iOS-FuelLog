@@ -20,7 +20,7 @@ class PreviewContainer {
 				model: "PCX 160",
 				year: 2024,
 				tankCapacityLiter: 8.1,
-				vehivleType: .motorcycle
+				vehicleType: .motorcycle
 			)
 			
 			let campusVario = Vehicle(
@@ -29,7 +29,7 @@ class PreviewContainer {
 				model: "Vario 125",
 				year: 2020,
 				tankCapacityLiter: 5.5,
-				vehivleType: .motorcycle
+				vehicleType: .motorcycle
 			)
 			
 			let cityBrio = Vehicle(
@@ -38,7 +38,7 @@ class PreviewContainer {
 				model: "Brio RS",
 				year: 2021,
 				tankCapacityLiter: 35.0,
-				vehivleType: .car
+				vehicleType: .car
 			)
 			
 			let oldDieselToyota = Vehicle(
@@ -47,7 +47,7 @@ class PreviewContainer {
 				model: "Kijang Innova 2.5 G",
 				year: 2007,
 				tankCapacityLiter: 55.0,
-				vehivleType: .car
+				vehicleType: .car
 			)
 			
 			context.insert(commuterPcx)

@@ -64,7 +64,7 @@ class HomeViewModel {
 			model: self.addBrand,
 			year: self.addYear,
 			tankCapacityLiter: self.addCapacity,
-			vehivleType: self.addType
+			vehicleType: self.addType
 		)
 		
 		self.modelContext.insert(newVehicle)
@@ -121,7 +121,7 @@ class HomeViewModel {
 		case .none:
 			groupedVehicles = sortedVehicles.isEmpty ? [:] : ["": sortedVehicles]
 		case .vehicleType:
-			groupedVehicles = Dictionary(grouping: sortedVehicles) { $0.vehivleType.rawValue }
+			groupedVehicles = Dictionary(grouping: sortedVehicles) { $0.vehicleType.rawValue }
 		case .vehicleBrand:
 			groupedVehicles = Dictionary(grouping: sortedVehicles) { $0.brand }
 		}

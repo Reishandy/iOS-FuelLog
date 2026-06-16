@@ -14,7 +14,7 @@ struct RefuelListItemView: View {
 		HStack(alignment: .center) {
 			VStack(alignment: .leading) {
 				// TODO: Use locale for currency
-				Text("Rp \(refuel.totalPrice.formatted(.number.precision(.fractionLength(2))))")
+				Text(refuel.totalPrice.formatted(.currency(code: "IDR")))
 					.lineLimit(1)
 				
 				Text(refuel.formattedTimestamp)

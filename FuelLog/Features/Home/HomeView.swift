@@ -45,6 +45,12 @@ struct HomeView: View {
 								}
 								.tint(.red)
 								
+								Button {
+									// TODO: Edit sheet
+								} label: {
+									Image(systemName: "info")
+									Text("Details")
+								}
 								
 								Button {
 									homeViewModel.defaultVehicle = vehicle.id
