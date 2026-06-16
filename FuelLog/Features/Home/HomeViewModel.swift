@@ -86,7 +86,7 @@ class HomeViewModel {
 			self.vehicleToDelete = nil
 			
 			if defaultVehicle == vehicleToDelete.id {
-				defaultVehicle = nil
+				preferences.defaultVehicle = nil
 			}
 		}
 	}
