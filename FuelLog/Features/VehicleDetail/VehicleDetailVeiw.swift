@@ -11,7 +11,7 @@ import SwiftData
 struct VehicleDetailVeiw: View {
 	@State var vehicleDetailViewModel: VehicleDetailViewModel
 	
-	@State private var isRefuelDetailPresented: Bool = false
+	@State private var isDetailPresented: Bool = false
 	@State private var isDeleteConfirmmationPresented: Bool = false
 	
     var body: some View {
@@ -46,11 +46,29 @@ struct VehicleDetailVeiw: View {
 								
 								Button {
 									vehicleDetailViewModel.selectedRefuel = refuel
-									isRefuelDetailPresented = true
+									isDetailPresented = true
 								} label: {
-									Image(systemName: "info")
-									Text("Details")
+									Image(systemName: "square.and.pencil")
+									Text("Edit")
 								}
+							}
+							.contextMenu {
+								Button {
+									vehicleDetailViewModel.selectedRefuel = refuel
+									isDetailPresented = true
+								} label: {
+									Image(systemName: "square.and.pencil")
+									Text("Edit")
+								}
+								
+								Button {
+									vehicleDetailViewModel.refuelToDelete = refuel
+									isDeleteConfirmmationPresented = true
+								} label: {
+									Image(systemName: "trash")
+									Text("Delete")
+								}
+								.tint(.red)
 							}
 					}
 				}
@@ -73,7 +91,7 @@ struct VehicleDetailVeiw: View {
 				// TODO: Make this glass prominent
 			}
 		}
-		.sheet(isPresented: $isRefuelDetailPresented) {
+		.sheet(isPresented: $isDetailPresented) {
 			// TODO: Refuel form, dismiss set selected to nil
 			Text("TODO")
 				.presentationDetents([.large])

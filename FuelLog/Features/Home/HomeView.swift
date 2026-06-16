@@ -15,6 +15,7 @@ struct HomeView: View {
 	@State var homeViewModel: HomeViewModel
 	
 	@State private var isAddSheetPresented: Bool = false
+	@State private var isEditSheetPresented: Bool = false
 	@State private var isSettingsPresented: Bool = false
 	@State private var isDeleteConfirmmationPresented: Bool = false
 	
@@ -35,32 +36,54 @@ struct HomeView: View {
 						value: AppRoute.vehicleDetail(vehicle.id)
 					) {
 						VehicleListItemView(vehicle: vehicle, isDefault: vehicle.id == homeViewModel.defaultVehicle)
-							.swipeActions(edge: .trailing, allowsFullSwipe: false) {
-								Button {
-									homeViewModel.vehicleToDelete = vehicle
-									isDeleteConfirmmationPresented = true
-								} label: {
-									Image(systemName: "trash")
-									Text("Delete")
-								}
-								.tint(.red)
-								
-								Button {
-									// TODO: Edit sheet
-								} label: {
-									Image(systemName: "info")
-									Text("Details")
-								}
-								
-								Button {
-									homeViewModel.defaultVehicle = vehicle.id
-								} label: {
-									Image(systemName: "checkmark.circle.fill")
-									Text("Default")
-								}
-								.tint(vehicle.id == homeViewModel.defaultVehicle ? .blue : Color(UIColor.secondarySystemFill))
-							}
-							
+					}
+					.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+						Button {
+							homeViewModel.vehicleToDelete = vehicle
+							isDeleteConfirmmationPresented = true
+						} label: {
+							Image(systemName: "trash")
+							Text("Delete")
+						}
+						.tint(.red)
+						
+						Button {
+							homeViewModel.selectedVehicle = vehicle
+							isEditSheetPresented = true
+						} label: {
+							Image(systemName: "square.and.pencil")
+							Text("Edit")
+						}
+						
+						Button {
+							homeViewModel.defaultVehicle = vehicle.id
+						} label: {
+							Image(systemName: "checkmark.circle.fill")
+							Text("Default")
+						}
+						.tint(vehicle.id == homeViewModel.defaultVehicle ? .blue : .secondary)
+					}
+					.contextMenu {
+						Button {
+							homeViewModel.defaultVehicle = vehicle.id
+						} label: {
+							Label("Default", systemImage: "checkmark.circle.fill")
+						}
+						.tint(vehicle.id == homeViewModel.defaultVehicle ? .blue : .secondary)
+						
+						Button {
+							homeViewModel.selectedVehicle = vehicle
+							isEditSheetPresented = true
+						} label: {
+							Label("Edit", systemImage: "square.and.pencil")
+						}
+						
+						Button(role: .destructive) {
+							homeViewModel.vehicleToDelete = vehicle
+							isDeleteConfirmmationPresented = true
+						} label: {
+							Label("Delete", systemImage: "trash")
+						}
 					}
 				}
 			}
@@ -118,7 +141,7 @@ struct HomeView: View {
 			}
 		}
 		.sheet(isPresented: $isAddSheetPresented) {
-			VehicleFormSheetView(
+			VehicleAddSheetView(
 				name: $homeViewModel.addName,
 				brand: $homeViewModel.addBrand,
 				model: $homeViewModel.addModel,
@@ -137,6 +160,14 @@ struct HomeView: View {
 				}
 			)
 			.navigationTransition(.zoom(sourceID: "addSheetSource", in: homeScreenNameSpace))
+		}
+		.sheet(isPresented: $isEditSheetPresented) {
+			if let selectedVehicle = homeViewModel.selectedVehicle {
+				VehicleEditSheetView(vehicle: selectedVehicle) {
+					isEditSheetPresented = false
+					homeViewModel.selectedVehicle = nil
+				}
+			}
 		}
 		.alert(
 			"Delete Vehicle?",

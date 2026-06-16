@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+enum VehicleFormField: Hashable {
+	case name, brand, model
+}
+
 struct VehicleFormView: View {
 	@Binding var name: String
 	@Binding var brand: String
@@ -15,8 +19,12 @@ struct VehicleFormView: View {
 	@Binding var capacity: Double
 	@Binding var type: VehicleType
 	
+	var onFieldUnfocus: ((VehicleFormField) -> Void)? = nil
+	
 	@State private var wholeCapacity: Int = 0
 	@State private var decimalCapacity: Int = 0
+	
+	@FocusState private var focusedField: VehicleFormField?
 	
 	// Range from first ever car to next year's model
 	private let yearRange: [Int] = Array((1884...(Calendar.current.component(.year, from: Date()) + 1)).reversed())
@@ -35,6 +43,7 @@ struct VehicleFormView: View {
 			Section {
 				VStack(spacing: 20) {
 					TextField("Name", text: $name)
+						.focused($focusedField, equals: .name)
 					
 					Picker("Type", selection: $type	) {
 						ForEach(VehicleType.allCases, id: \.self) { option in
@@ -48,11 +57,15 @@ struct VehicleFormView: View {
 				VStack(spacing: 20) {
 					HStack {
 						TextField("Brand", text: $brand)
+							.focused($focusedField, equals: .brand)
 						
 						Picker("Select Brand", selection: $brand) {
 							Text("Select Brand").tag("")
 							
-							// TODO: Make this also include custom brands
+							if !brand.isEmpty {
+								Text(brand).tag(brand)
+							}
+							
 							ForEach(brandList, id: \.self) { option in
 								Text(option).tag(option)
 							}
@@ -61,6 +74,7 @@ struct VehicleFormView: View {
 					}
 					
 					TextField("Model", text: $model)
+						.focused($focusedField, equals: .model)
 					
 					VStack(alignment: .leading) {
 						Text("Year")
@@ -126,6 +140,11 @@ struct VehicleFormView: View {
 			}
 		}
 		.listSectionSpacing(.custom(20))
+		.onChange(of: focusedField) { oldValue, newValue in
+			if let unfocusedField = oldValue {
+				onFieldUnfocus?(unfocusedField)
+			}
+		}
 	}
 	
 	private func updateCapacityBinding() {

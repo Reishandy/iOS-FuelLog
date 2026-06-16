@@ -15,11 +15,15 @@ class HomeViewModel {
 	private var vehicles: [Vehicle] = []
 	
 	var filteredVehicles: [String: [Vehicle]] = [:]
+	var customBrand: [String] = []
 	
 	var vehicleGroupBy: VehicleGroupBy = .vehicleType { didSet { filterVehcile() } }
 	var vehicleSortBy: VehicleSortBy = .timestampAsc { didSet { filterVehcile() } }
 	var vehicleSearchTerm: String = "" { didSet { filterVehcile() } }
+	
+	var selectedVehicle: Vehicle? = nil
 	var vehicleToDelete: Vehicle? = nil
+	
 	var defaultVehicle: UUID? {
 		get {
 			preferences.defaultVehicle

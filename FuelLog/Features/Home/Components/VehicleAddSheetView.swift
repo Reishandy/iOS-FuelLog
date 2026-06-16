@@ -1,5 +1,5 @@
 //
-//  VehicleFormSheetView.swift
+//  VehicleAddSheetView.swift
 //  FuelLog
 //
 //  Created by Muhammad Akbar Reishandy on 15/06/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct VehicleFormSheetView: View {
+struct VehicleAddSheetView: View {
 	@Binding var name: String
 	@Binding var brand: String
 	@Binding var model: String
@@ -76,7 +76,7 @@ struct VehicleFormSheetView: View {
 }
 
 #Preview {
-	VehicleFormSheetView(
+	VehicleAddSheetView(
 		name: .constant(""),
 		brand: .constant(""),
 		model: .constant(""),
