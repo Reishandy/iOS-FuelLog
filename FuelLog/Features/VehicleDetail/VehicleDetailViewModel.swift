@@ -15,6 +15,7 @@ class VehicleDetailViewModel {
 	
 	var vehicle: Vehicle? = nil
 	var filteredRefuels: [String: [Refuel]] = [:]
+	var fuelTypes: [String] = []
 	
 	var selectedRefuel: Refuel? = nil
 	var refuelToDelete: Refuel? = nil
@@ -61,6 +62,9 @@ class VehicleDetailViewModel {
 			
 			self.vehicle = try modelContext.fetch(descriptor).first
 			self.filterRefuels()
+			
+			let refuels = try modelContext.fetch(FetchDescriptor<Refuel>())
+			self.fuelTypes = Array(Set(refuels.compactMap { $0.fuelType }))
 		} catch {
 			print("ERROR > Failed populating VehicleDetailViewModel: \(error)")
 		}

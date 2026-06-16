@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-enum VehicleFormField: Hashable {
-	case name, brand, model
-}
-
 struct VehicleFormView: View {
 	@Binding var name: String
 	@Binding var brand: String

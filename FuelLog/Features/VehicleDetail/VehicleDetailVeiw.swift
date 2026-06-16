@@ -11,7 +11,7 @@ import SwiftData
 struct VehicleDetailVeiw: View {
 	@State var vehicleDetailViewModel: VehicleDetailViewModel
 	
-	@State private var isDetailPresented: Bool = false
+	@State private var isDetailSheetPresented: Bool = false
 	@State private var isDeleteConfirmmationPresented: Bool = false
 	
     var body: some View {
@@ -46,7 +46,7 @@ struct VehicleDetailVeiw: View {
 								
 								Button {
 									vehicleDetailViewModel.selectedRefuel = refuel
-									isDetailPresented = true
+									isDetailSheetPresented = true
 								} label: {
 									Image(systemName: "square.and.pencil")
 									Text("Edit")
@@ -55,7 +55,7 @@ struct VehicleDetailVeiw: View {
 							.contextMenu {
 								Button {
 									vehicleDetailViewModel.selectedRefuel = refuel
-									isDetailPresented = true
+									isDetailSheetPresented = true
 								} label: {
 									Image(systemName: "square.and.pencil")
 									Text("Edit")
@@ -94,10 +94,16 @@ struct VehicleDetailVeiw: View {
 				}
 			}
 		}
-		.sheet(isPresented: $isDetailPresented) {
-			// TODO: Refuel form, dismiss set selected to nil
-			Text("TODO")
-				.presentationDetents([.large])
+		.sheet(isPresented: $isDetailSheetPresented) {
+			if let selectedRefuel = vehicleDetailViewModel.selectedRefuel {
+				RefuelEditSheetView(
+					refuel: selectedRefuel,
+					fuelTypes: vehicleDetailViewModel.fuelTypes
+				) {
+					isDetailSheetPresented = false
+					vehicleDetailViewModel.selectedRefuel = nil
+				}
+			}
 		}
 		.alert(
 			"Delete Refuel?",
