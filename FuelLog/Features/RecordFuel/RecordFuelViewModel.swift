@@ -11,6 +11,7 @@ import SwiftData
 @Observable
 class RecordFuelViewModel {
 	private var modelContext: ModelContext
+	private var visionWorker: VisionWorker
 	private var vehicleId: UUID
 	private var vehicle: Vehicle? = nil
 	
@@ -18,6 +19,8 @@ class RecordFuelViewModel {
 	var maxAmount: Double {
 		vehicle?.tankCapacity ?? 0.0
 	}
+	var pendingCount: Int = 0
+	var isStatusSuccess: Bool? = nil
 	
 	var addOdometer: Double = 0.0
 	var addAmount: Double = 0.0
@@ -33,7 +36,10 @@ class RecordFuelViewModel {
 	
 	init(modelContext: ModelContext, vehicleId: UUID) {
 		self.modelContext = modelContext
+		self.visionWorker = VisionWorker()
 		self.vehicleId = vehicleId
+		
+		Task { await observeQueue() }
 	}
 	
 	func fetchData() {
@@ -75,5 +81,37 @@ class RecordFuelViewModel {
 		self.addPricePerUnit = 0.0
 		self.addFuelType = ""
 		self.addTimestamp = .now
+	}
+	
+	func addImageTask(_ imageData: Data) {
+		let newTask = VisionTask(
+			id: UUID(),
+			imageData: imageData,
+		)
+		
+		Task { await self.visionWorker.enqueue(newTask) }
+	}
+	
+	func cancelQueue() {
+		Task { await self.visionWorker.cancelAll() }
+	}
+	
+	private func observeQueue() async {
+		for await event in await self.visionWorker.events {
+			self.pendingCount = event.pendingCount
+			
+			if let result = event.completedTask {
+				self.updateFromResult(result)
+			}
+		}
+	}
+	
+	private func updateFromResult(_ visionResult: VisionResult) {
+		// TODO: Update status here and set stuff
+		self.isStatusSuccess = false
+		
+		DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+			self.isStatusSuccess = nil
+		}
 	}
 }

@@ -16,6 +16,23 @@ struct RecordFuelView: View {
 	
 	@State private var isAddSheetPresented: Bool = false
 	@State private var isDismissConfirmationShown: Bool = false
+	@State private var buttonScale: CGFloat = 1.0
+	@State private var flashOpacity: Double = 0.0
+	
+	private var isProcessing: Bool {
+		recordFuelViewModel.pendingCount > 0
+	}
+	
+	private var processingText: String {
+		isProcessing ? "processing \(recordFuelViewModel.pendingCount) image\(recordFuelViewModel.pendingCount > 1 ? "s" : "")" : "capture to start process"
+	}
+	
+	private var statusColor: Color {
+		guard let isSuccess = recordFuelViewModel.isStatusSuccess else {
+			return .clear
+		}
+		return isSuccess ? .green : .red
+	}
 	
 	var body: some View {
 		ZStack(alignment: .bottom) {
@@ -24,12 +41,29 @@ struct RecordFuelView: View {
 				.frame(maxWidth: .infinity, maxHeight: .infinity)
 				.background(.gray)
 			
+			Rectangle()
+				.stroke(statusColor, lineWidth: 40)
+				.blur(radius: 40)
+				.opacity(statusColor == .clear ? 0.0 : 0.3)
+				.ignoresSafeArea()
+				.allowsHitTesting(false)
+				.animation(.easeInOut(duration: 0.3), value: statusColor)
+			
+			Color.black
+				.opacity(flashOpacity)
+				.ignoresSafeArea()
+				.allowsHitTesting(false)
+			
 			Button {
+				triggerShutterAnimation()
+				
 				// TODO: Camera
+				recordFuelViewModel.addImageTask(Data())
 			} label: {
 				Circle()
 					.frame(width: 70)
 					.foregroundStyle(.white)
+					.scaleEffect(buttonScale)
 			}
 			.buttonStyle(.plain)
 			.background {
@@ -46,6 +80,7 @@ struct RecordFuelView: View {
 					if recordFuelViewModel.isAddFormDirty {
 						isDismissConfirmationShown = true
 					} else {
+						recordFuelViewModel.cancelQueue()
 						dismiss()
 					}
 				} label: {
@@ -58,6 +93,7 @@ struct RecordFuelView: View {
 				) {
 					Button("Discard Change", role: .destructive) {
 						recordFuelViewModel.clearAddRefuel()
+						recordFuelViewModel.cancelQueue()
 						dismiss()
 					}
 					.buttonStyle(.bordered)
@@ -75,9 +111,16 @@ struct RecordFuelView: View {
 			ToolbarSpacer(placement: .bottomBar)
 			
 			ToolbarItem(placement: .bottomBar) {
-				// TODO: Processing image loading, and notification if sucess process
-				Text("Idling")
-					.frame(maxWidth: .infinity)
+				HStack {
+					Text(processingText)
+						.font(.callout)
+					
+					if isProcessing {
+						ProgressView()
+					}
+				}
+				.animation(.default, value: isProcessing)
+				.frame(maxWidth: .infinity)
 			}
 			
 			ToolbarSpacer(placement: .bottomBar)
@@ -87,7 +130,7 @@ struct RecordFuelView: View {
 					isAddSheetPresented = true
 				} label: {
 					Image(systemName: "fuelpump")
-						.foregroundStyle(.white)
+						.foregroundStyle(.orange)
 				}
 				.buttonStyle(.glassProminent)
 				.tint(.orange)
@@ -116,6 +159,23 @@ struct RecordFuelView: View {
 		}
 		.task {
 			recordFuelViewModel.fetchData()
+		}
+	}
+	
+	private func triggerShutterAnimation() {
+		flashOpacity = 1.0
+		withAnimation(.easeInOut(duration: 0.5)) {
+			flashOpacity = 0.0
+		}
+		
+		withAnimation(.spring(response: 0.2, dampingFraction: 0.6)) {
+			buttonScale = 0.8
+		}
+		
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+			withAnimation(.spring(response: 0.2, dampingFraction: 0.6)) {
+				buttonScale = 1.0
+			}
 		}
 	}
 }

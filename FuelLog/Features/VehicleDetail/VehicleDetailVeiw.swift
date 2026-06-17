@@ -80,7 +80,7 @@ struct VehicleDetailVeiw: View {
 				ToolbarItem(placement: .bottomBar) {
 					NavigationLink(value: AppRoute.recordFuel(vehicle.id)) {
 						Image(systemName: "plus")
-							.foregroundStyle(.white)
+							.foregroundStyle(.orange)
 					}
 					.buttonStyle(.glassProminent)
 					.tint(.orange)
