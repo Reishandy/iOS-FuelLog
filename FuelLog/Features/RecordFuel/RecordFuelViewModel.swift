@@ -15,6 +15,9 @@ class RecordFuelViewModel {
 	private var vehicle: Vehicle? = nil
 	
 	var fuelTypes: [String] = []
+	var maxAmount: Double {
+		vehicle?.tankCapacity ?? 0.0
+	}
 	
 	var addOdometer: Double = 0.0
 	var addAmount: Double = 0.0

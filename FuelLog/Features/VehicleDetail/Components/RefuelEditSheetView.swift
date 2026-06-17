@@ -12,6 +12,7 @@ struct RefuelEditSheetView: View {
 	let refuel: Refuel
 	let onDismissClick: () -> Void
 	let fuelTypes: [String]
+	let maxAmount: Double
 	
 	@State private var odometer: Double
 	@State private var amount: Double
@@ -25,11 +26,13 @@ struct RefuelEditSheetView: View {
 	init(
 		refuel: Refuel,
 		fuelTypes: [String],
+		maxAmount: Double,
 		onDismissClick: @escaping () -> Void
 	) {
 		self.refuel = refuel
 		self.onDismissClick = onDismissClick
 		self.fuelTypes = fuelTypes
+		self.maxAmount = maxAmount
 		
 		self.odometer = refuel.odometer
 		self.amount = refuel.amount
@@ -55,6 +58,7 @@ struct RefuelEditSheetView: View {
 				fuelType: $fuelType,
 				timestamp: $timestamp,
 				isFormValid: $isFormValid,
+				maxAmount: maxAmount,
 				fuelTypes: fuelTypes,
 				onFieldUnfocus: { field in
 					switch field {
@@ -119,11 +123,12 @@ struct RefuelEditSheetView: View {
 	let refuels = try? context.fetch(descriptor)
 	
 	if let refuel = refuels?.first {
-		RefuelEditSheetView(refuel: refuel, fuelTypes: ["Pertamax", "Pertalite"]) {}
+		RefuelEditSheetView(refuel: refuel, fuelTypes: ["Pertamax", "Pertalite"], maxAmount: 10.0) {}
 	} else {
 		RefuelEditSheetView(
 			refuel: Refuel(odometer: 15000, amount: 25.5, pricePerUnit: 10000),
-			fuelTypes: ["Pertamax", "Pertalite"]
+			fuelTypes: ["Pertamax", "Pertalite"],
+			maxAmount: 10.0
 		) {}
 	}
 }

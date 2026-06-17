@@ -91,7 +91,8 @@ struct VehicleDetailVeiw: View {
 			if let selectedRefuel = vehicleDetailViewModel.selectedRefuel {
 				RefuelEditSheetView(
 					refuel: selectedRefuel,
-					fuelTypes: vehicleDetailViewModel.fuelTypes
+					fuelTypes: vehicleDetailViewModel.fuelTypes,
+					maxAmount: vehicleDetailViewModel.vehicle?.tankCapacity ?? 0.0
 				) {
 					isDetailSheetPresented = false
 					vehicleDetailViewModel.selectedRefuel = nil

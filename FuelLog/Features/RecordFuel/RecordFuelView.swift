@@ -101,6 +101,7 @@ struct RecordFuelView: View {
 				pricePerUnit: $recordFuelViewModel.addPricePerUnit,
 				fuelType: $recordFuelViewModel.addFuelType,
 				timestamp: $recordFuelViewModel.addTimestamp,
+				maxAmount: recordFuelViewModel.maxAmount,
 				fuelTypes: recordFuelViewModel.fuelTypes,
 				onDismissClick: {
 					isAddSheetPresented = false

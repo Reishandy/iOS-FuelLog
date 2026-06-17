@@ -18,6 +18,7 @@ struct RefuelFormView: View {
 	
 	@Binding var isFormValid: Bool
 	
+	var maxAmount: Double
 	var fuelTypes: [String]
 	var onFieldUnfocus: ((RefuelFormField) -> Void)? = nil
 	
@@ -29,6 +30,13 @@ struct RefuelFormView: View {
 	@State private var priceInputMethod: PriceInputMethod = .perUnit
 	
 	@FocusState private var focusedField: RefuelFormField?
+	
+	private var maxAllowedDecimal: Int {
+		if wholeCapacity == Int(maxAmount) {
+			return Int((maxAmount.truncatingRemainder(dividingBy: 1) * 10).rounded())
+		}
+		return 9
+	}
 	
 	var body: some View {
 		Form {
@@ -58,7 +66,7 @@ struct RefuelFormView: View {
 						Spacer()
 						
 						Picker("", selection: $wholeCapacity) {
-							ForEach(0...999, id: \.self) { value in
+							ForEach(0...Int(maxAmount), id: \.self) { value in
 								Text("\(value)").tag(value)
 							}
 						}
@@ -71,7 +79,7 @@ struct RefuelFormView: View {
 							.padding(.horizontal, 4)
 						
 						Picker("", selection: $decimalCapacity) {
-							ForEach(0...9, id: \.self) { value in
+							ForEach(0...maxAllowedDecimal, id: \.self) { value in
 								Text("\(value)").tag(value)
 							}
 						}
@@ -81,7 +89,12 @@ struct RefuelFormView: View {
 						Spacer()
 					}
 					.frame(height: 120)
-					.onChange(of: wholeCapacity) { _, _ in updateAmountBinding() }
+					.onChange(of: wholeCapacity) { _, _ in
+						if decimalCapacity > maxAllowedDecimal {
+							decimalCapacity = maxAllowedDecimal
+						}
+						updateAmountBinding()
+					}
 					.onChange(of: decimalCapacity) { _, _ in updateAmountBinding() }
 					.onAppear {
 						parseInitialAmount()
@@ -259,7 +272,7 @@ struct RefuelFormView: View {
 		!pricePerUnitText.trimmingCharacters(in: .whitespaces).isEmpty :
 		!priceTotalText.trimmingCharacters(in: .whitespaces).isEmpty
 		
-		let isAmountValid = amount > 0.0
+		let isAmountValid = amount > 0.0 && amount <= maxAmount
 		
 		isFormValid = isOdoValid && isPriceValid && isAmountValid
 	}
@@ -305,6 +318,7 @@ struct RefuelFormView: View {
 		fuelType: .constant(""),
 		timestamp: .constant(.now),
 		isFormValid: .constant(false),
+		maxAmount: 10.4,
 		fuelTypes: ["Pertamax", "Pertalite"]
 	)
 	.environment(PreferencesService())

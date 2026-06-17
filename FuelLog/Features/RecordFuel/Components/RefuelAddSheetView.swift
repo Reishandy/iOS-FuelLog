@@ -14,6 +14,7 @@ struct RefuelAddSheetView: View {
 	@Binding var fuelType: String
 	@Binding var timestamp: Date
 	
+	let maxAmount: Double
 	let fuelTypes: [String]
 	let onDismissClick: () -> Void
 	let onSaveClick: () -> Void
@@ -29,6 +30,7 @@ struct RefuelAddSheetView: View {
 				fuelType: $fuelType,
 				timestamp: $timestamp,
 				isFormValid: $isFormValid,
+				maxAmount: maxAmount,
 				fuelTypes: fuelTypes
 			)
 			.navigationTitle("Record Refuel")
@@ -59,6 +61,7 @@ struct RefuelAddSheetView: View {
 		pricePerUnit: .constant(0.0),
 		fuelType: .constant(""),
 		timestamp: .constant(.now),
+		maxAmount: 10.0,
 		fuelTypes: [],
 		onDismissClick: {},
 		onSaveClick: {}
