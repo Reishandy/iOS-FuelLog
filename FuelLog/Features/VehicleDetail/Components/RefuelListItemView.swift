@@ -27,7 +27,7 @@ struct RefuelListItemView: View {
 			Spacer()
 			
 			VStack(alignment: .trailing) {
-				Text("\(refuel.amount.formatted(.number.precision(.fractionLength(1)))) \(preferences.measurementUnit == .metric ? "L" : "gal")")
+				Text("\(refuel.amount.formatted(.number.precision(.fractionLength(1)))) \(preferences.measurementUnit.volumeShort)")
 					.lineLimit(1)
 				
 				Text(refuel.fuelType ?? "")

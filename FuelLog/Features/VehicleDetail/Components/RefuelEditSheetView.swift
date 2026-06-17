@@ -62,7 +62,7 @@ struct RefuelEditSheetView: View {
 						if odometer == 0.0 {
 							odometer = refuel.odometer
 						}
-					case .pricePerUnit:
+					case .pricePerUnit, .priceTotal:
 						if pricePerUnit == 0.0 {
 							pricePerUnit = refuel.pricePerUnit
 						}

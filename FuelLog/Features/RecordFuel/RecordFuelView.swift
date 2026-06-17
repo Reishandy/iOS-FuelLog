@@ -17,7 +17,6 @@ struct RecordFuelView: View {
 	@State private var isAddSheetPresented: Bool = false
 	@State private var isDismissConfirmationShown: Bool = false
 	
-	// TODO: Discard confirmation on back button
 	var body: some View {
 		ZStack(alignment: .bottom) {
 			// TODO: Camera view
@@ -30,6 +29,7 @@ struct RecordFuelView: View {
 			} label: {
 				Circle()
 					.frame(width: 70)
+					.foregroundStyle(.white)
 			}
 			.buttonStyle(.plain)
 			.background {

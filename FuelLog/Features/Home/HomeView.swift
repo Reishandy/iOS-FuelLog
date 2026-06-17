@@ -41,8 +41,7 @@ struct HomeView: View {
 							homeViewModel.vehicleToDelete = vehicle
 							isDeleteConfirmmationPresented = true
 						} label: {
-							Image(systemName: "trash")
-							Text("Delete")
+							Label("Delete", systemImage: "trash")
 						}
 						.tint(.red)
 						
@@ -50,15 +49,13 @@ struct HomeView: View {
 							homeViewModel.selectedVehicle = vehicle
 							isEditSheetPresented = true
 						} label: {
-							Image(systemName: "square.and.pencil")
-							Text("Edit")
+							Label("Edit", systemImage: "square.and.pencil")
 						}
 						
 						Button {
 							homeViewModel.defaultVehicle = vehicle.id
 						} label: {
-							Image(systemName: "checkmark.circle.fill")
-							Text("Default")
+							Label("Default", systemImage: "checkmark.circle.fill")
 						}
 						.tint(vehicle.id == homeViewModel.defaultVehicle ? .blue : .secondary)
 					}
@@ -82,6 +79,7 @@ struct HomeView: View {
 							isDeleteConfirmmationPresented = true
 						} label: {
 							Label("Delete", systemImage: "trash")
+								.foregroundStyle(.red)
 						}
 					}
 				}
@@ -131,6 +129,14 @@ struct HomeView: View {
 							ForEach(MeasurmentUnit.allCases, id: \.self) { option in
 								Text(option.rawValue).tag(option)
 							}
+						}
+					}
+					
+					Menu("Price Input Method") {
+						Picker("Price Input Method", selection: $homeViewModel.priceInputMethod) {
+							Text("Price per \(homeViewModel.measurementUnit == .metric ? "Liter" : "Gallon")").tag(PriceInputMethod.perUnit)
+							
+							Text("Price total").tag(PriceInputMethod.total)
 						}
 					}
 				} label: {

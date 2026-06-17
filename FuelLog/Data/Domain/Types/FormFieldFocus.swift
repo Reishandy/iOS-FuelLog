@@ -10,5 +10,5 @@ enum VehicleFormField: Hashable {
 }
 
 enum RefuelFormField: Hashable {
-	case odometer, pricePerUnit
+	case odometer, pricePerUnit, priceTotal
 }

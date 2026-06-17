@@ -25,11 +25,12 @@ struct RefuelFormView: View {
 	@State private var decimalCapacity: Int = 0
 	@State private var odometerText: String = ""
 	@State private var pricePerUnitText: String = ""
+	@State private var priceTotalText: String = ""
+	@State private var priceInputMethod: PriceInputMethod = .perUnit
 	
 	@FocusState private var focusedField: RefuelFormField?
 	
-	// TODO: Switch for total price
-    var body: some View {
+	var body: some View {
 		Form {
 			Section {
 				VStack(spacing: 20) {
@@ -37,8 +38,8 @@ struct RefuelFormView: View {
 						TextField("Odometer", text: $odometerText)
 							.keyboardType(.decimalPad)
 							.focused($focusedField, equals: .odometer)
-					
-						Text(preferences.measurementUnit == .metric ? "Km" : "mi")
+						
+						Text(preferences.measurementUnit.distanceShort)
 							.font(.subheadline)
 							.opacity(0.6)
 					}
@@ -48,7 +49,7 @@ struct RefuelFormView: View {
 						
 						Spacer()
 						
-						Text(preferences.measurementUnit == .metric ? "Liters" : "Gallons")
+						Text(preferences.measurementUnit.volumePlural)
 							.font(.subheadline)
 							.opacity(0.6)
 					}
@@ -90,18 +91,39 @@ struct RefuelFormView: View {
 			
 			Section {
 				VStack(spacing: 20) {
-					HStack {
-						Text(preferences.currency.symbol)
-							.font(.subheadline)
-							.opacity(0.6)
+					Picker("Price Input Method", selection: $priceInputMethod) {
+						Text("Price per \(preferences.measurementUnit.volumeSingular)").tag(PriceInputMethod.perUnit)
 						
-						TextField("Price", text: $pricePerUnitText)
-							.keyboardType(.decimalPad)
-							.focused($focusedField, equals: .pricePerUnit)
-						
-						Text("/ \(preferences.measurementUnit == .metric ? "Liter" : "Gallon")")
-							.font(.subheadline)
-							.opacity(0.6)
+						Text("Price total").tag(PriceInputMethod.total)
+					}
+					.pickerStyle(.segmented)
+					.disabled(amount == 0.0)
+					
+					switch priceInputMethod {
+					case .perUnit:
+						HStack {
+							Text(preferences.currency.symbol)
+								.font(.subheadline)
+								.opacity(0.6)
+							
+							TextField("Price", text: $pricePerUnitText)
+								.keyboardType(.decimalPad)
+								.focused($focusedField, equals: .pricePerUnit)
+							
+							Text(" / \(preferences.measurementUnit.volumeSingular)")
+								.font(.subheadline)
+								.opacity(0.6)
+						}
+					case .total:
+						HStack {
+							Text(preferences.currency.symbol)
+								.font(.subheadline)
+								.opacity(0.6)
+							
+							TextField("Price total", text: $priceTotalText)
+								.keyboardType(.decimalPad)
+								.focused($focusedField, equals: .priceTotal)
+						}
 					}
 					
 					HStack {
@@ -110,7 +132,7 @@ struct RefuelFormView: View {
 						Picker("Select Type", selection: $fuelType) {
 							Text("Select Type").tag("")
 							
-							if !fuelType.isEmpty {
+							if !fuelType.isEmpty && !fuelTypes.contains(fuelType) {
 								Text(fuelType).tag(fuelType)
 							}
 							
@@ -133,25 +155,30 @@ struct RefuelFormView: View {
 		}
 		.listSectionSpacing(.custom(20))
 		.onAppear {
+			priceInputMethod = preferences.priceInputMethod
+			
 			if odometer != 0.0 {
-				// %g removes trailing zero
-				odometerText = String(format: "%g", odometer)
+				odometerText = format(value: odometer)
 			}
 			
 			if pricePerUnit != 0.0 {
-				pricePerUnitText = String(format: "%g", pricePerUnit)
+				pricePerUnitText = format(value: pricePerUnit)
+				if amount != 0.0 {
+					priceTotalText = format(value: (pricePerUnit * amount))
+				}
 			}
 			
 			updateValidationAndSync()
 		}
 		.onChange(of: focusedField) { oldValue, newValue in
 			if let unfocusedField = oldValue {
-				
 				switch unfocusedField {
 				case .odometer:
 					commitDecimalField(text: $odometerText, to: $odometer)
 				case .pricePerUnit:
 					commitDecimalField(text: $pricePerUnitText, to: $pricePerUnit)
+				case .priceTotal:
+					priceTotalText = format(value: parseDouble(from: priceTotalText))
 				}
 				
 				DispatchQueue.main.async {
@@ -167,52 +194,106 @@ struct RefuelFormView: View {
 		}
 		.onChange(of: odometerText) { _, _ in updateValidationAndSync() }
 		.onChange(of: pricePerUnitText) { _, _ in updateValidationAndSync() }
-    }
+		.onChange(of: priceTotalText) { _, _ in updateValidationAndSync() }
+		.onChange(of: priceInputMethod) { _, _ in updateValidationAndSync() }
+	}
 	
 	private func updateAmountBinding() {
 		amount = Double(wholeCapacity) + (Double(decimalCapacity) / 10.0)
+		
+		if amount == 0.0 && priceInputMethod == .total {
+			priceInputMethod = .perUnit
+		}
+		
+		if amount > 0.0 {
+			if priceInputMethod == .perUnit {
+				let newTotal = pricePerUnit * amount
+				let formattedTotal = format(value: newTotal)
+				if priceTotalText != formattedTotal {
+					priceTotalText = formattedTotal
+				}
+			} else if priceInputMethod == .total {
+				let currentTotal = parseDouble(from: priceTotalText)
+				let newUnit = currentTotal / amount
+				
+				if pricePerUnit != newUnit {
+					pricePerUnit = newUnit
+				}
+				
+				let formattedUnit = format(value: newUnit)
+				if pricePerUnitText != formattedUnit {
+					pricePerUnitText = formattedUnit
+				}
+			}
+		}
+		
+		updateValidationAndSync()
 	}
 	
 	private func parseInitialAmount() {
 		wholeCapacity = Int(amount)
-		
-		let remainder = amount.truncatingRemainder(dividingBy: 1)
-		let roundedDecimal = Int((remainder * 10).rounded())
-		
-		decimalCapacity = max(0, min(9, roundedDecimal))
+		decimalCapacity = Int((amount.truncatingRemainder(dividingBy: 1) * 10).rounded())
 	}
 	
 	private func commitDecimalField(text: Binding<String>, to value: Binding<Double>) {
-		let parsedValue = Double(text.wrappedValue.replacingOccurrences(of: ",", with: ".")) ?? 0.0
-		
+		let parsedValue = parseDouble(from: text.wrappedValue)
 		value.wrappedValue = parsedValue
-		
-		if parsedValue == 0.0 {
-			text.wrappedValue = ""
-		} else {
-			text.wrappedValue = String(format: "%g", parsedValue)
-		}
+		text.wrappedValue = format(value: parsedValue)
 	}
 	
 	private func syncDecimalText(for newValue: Double, textBinding: Binding<String>) {
-		let currentParsed = Double(textBinding.wrappedValue.replacingOccurrences(of: ",", with: ".")) ?? 0.0
-		
-		if newValue != currentParsed {
-			textBinding.wrappedValue = newValue == 0.0 ? "" : String(format: "%g", newValue)
+		if newValue != parseDouble(from: textBinding.wrappedValue) {
+			textBinding.wrappedValue = format(value: newValue)
 		}
 	}
 	
 	private func updateValidationAndSync() {
-		let parsedOdo = Double(odometerText.replacingOccurrences(of: ",", with: ".")) ?? 0.0
+		let parsedOdo = parseDouble(from: odometerText)
 		if odometer != parsedOdo { odometer = parsedOdo }
 		
-		let parsedPrice = Double(pricePerUnitText.replacingOccurrences(of: ",", with: ".")) ?? 0.0
-		if pricePerUnit != parsedPrice { pricePerUnit = parsedPrice }
+		syncPrices()
 		
-		let isOdoEmpty = odometerText.trimmingCharacters(in: .whitespaces).isEmpty
-		let isPriceEmpty = pricePerUnitText.trimmingCharacters(in: .whitespaces).isEmpty
+		let isOdoValid = !odometerText.trimmingCharacters(in: .whitespaces).isEmpty
 		
-		isFormValid = !isOdoEmpty && !isPriceEmpty
+		let isPriceValid = priceInputMethod == .perUnit ?
+		!pricePerUnitText.trimmingCharacters(in: .whitespaces).isEmpty :
+		!priceTotalText.trimmingCharacters(in: .whitespaces).isEmpty
+		
+		let isAmountValid = amount > 0.0
+		
+		isFormValid = isOdoValid && isPriceValid && isAmountValid
+	}
+	
+	private func syncPrices() {
+		if priceInputMethod == .perUnit {
+			let parsedPrice = parseDouble(from: pricePerUnitText)
+			if pricePerUnit != parsedPrice { pricePerUnit = parsedPrice }
+			
+			if amount > 0.0 {
+				let calculatedTotal = parsedPrice * amount
+				let formattedTotal = format(value: calculatedTotal)
+				if priceTotalText != formattedTotal { priceTotalText = formattedTotal }
+			}
+			
+		} else if priceInputMethod == .total {
+			let parsedTotal = parseDouble(from: priceTotalText)
+			
+			if amount > 0.0 {
+				let calculatedUnit = parsedTotal / amount
+				if pricePerUnit != calculatedUnit { pricePerUnit = calculatedUnit }
+				
+				let formattedUnit = format(value: calculatedUnit)
+				if pricePerUnitText != formattedUnit { pricePerUnitText = formattedUnit }
+			}
+		}
+	}
+	
+	private func parseDouble(from string: String) -> Double {
+		Double(string.replacingOccurrences(of: ",", with: ".")) ?? 0.0
+	}
+	
+	private func format(value: Double) -> String {
+		value == 0.0 ? "" : String(format: "%g", value)
 	}
 }
 

@@ -52,6 +52,14 @@ class HomeViewModel {
 			preferences.measurementUnit = newValue
 		}
 	}
+	var priceInputMethod: PriceInputMethod {
+		get {
+			preferences.priceInputMethod
+		}
+		set {
+			preferences.priceInputMethod = newValue
+		}
+	}
 	
 	var addName: String = ""
 	var addBrand: String = ""

@@ -14,14 +14,6 @@ struct VehicleDetailCardView: View {
 	let vehicle: Vehicle
 	@State private var isExpanded: Bool = false
 	
-	private var distanceUnit: String {
-		preferences.measurementUnit == .metric ? "Km" : "mi"
-	}
-	
-	private var efficiencyUnit: String {
-		preferences.measurementUnit == .metric ? "Km/L" : "mpg"
-	}
-	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 8) {
 			Text(vehicle.name)
@@ -36,17 +28,17 @@ struct VehicleDetailCardView: View {
 				List {
 					DetailListItemView(
 						title: "Est. max range",
-						value: "\(vehicle.estimatedMaxRange.formatted(.number.precision(.fractionLength(0)))) \(distanceUnit)"
+						value: "\(vehicle.estimatedMaxRange.formatted(.number.precision(.fractionLength(0)))) \(preferences.measurementUnit.distanceShort)"
 					)
 					
 					DetailListItemView(
 						title: "Average efficiency",
-						value: "\(vehicle.averageEfficiency.formatted(.number.precision(.fractionLength(1)))) \(efficiencyUnit)"
+						value: "\(vehicle.averageEfficiency.formatted(.number.precision(.fractionLength(1)))) \(preferences.measurementUnit.efficiency)"
 					)
 					
 					DetailListItemView(
-						title: "Cost / \(distanceUnit)",
-						value: "\(vehicle.costPerDistance.formatted(.currency(code: preferences.currency.rawValue))) / \(distanceUnit)"
+						title: "Cost / \(preferences.measurementUnit.distanceShort)",
+						value: "\(vehicle.costPerDistance.formatted(.currency(code: preferences.currency.rawValue))) / \(preferences.measurementUnit.distanceShort)"
 					)
 					
 					DetailListItemView(
@@ -56,12 +48,12 @@ struct VehicleDetailCardView: View {
 					
 					DetailListItemView(
 						title: "Most recent odometer",
-						value: "\(vehicle.mostRecentOdometer.formatted(.number.precision(.fractionLength(1)))) \(distanceUnit)"
+						value: "\(vehicle.mostRecentOdometer.formatted(.number.precision(.fractionLength(1)))) \(preferences.measurementUnit.distanceShort)"
 					)
 					
 					DetailListItemView(
 						title: "Distance tracked",
-						value: "\(vehicle.totalDistanceTracked.formatted(.number.precision(.fractionLength(1)))) \(distanceUnit)"
+						value: "\(vehicle.totalDistanceTracked.formatted(.number.precision(.fractionLength(1)))) \(preferences.measurementUnit.distanceShort)"
 					)
 				}
 				.scrollDisabled(true)
@@ -72,7 +64,7 @@ struct VehicleDetailCardView: View {
 			
 			HStack(alignment: .bottom) {
 				if !isExpanded {
-					Text("\(vehicle.mostRecentOdometer.formatted(.number.precision(.fractionLength(1)))) \(distanceUnit)")
+					Text("\(vehicle.mostRecentOdometer.formatted(.number.precision(.fractionLength(1)))) \(preferences.measurementUnit.distanceShort)")
 						.font(.subheadline)
 						.opacity(0.7)
 				}

@@ -38,18 +38,15 @@ struct VehicleDetailVeiw: View {
 									vehicleDetailViewModel.refuelToDelete = refuel
 									isDeleteConfirmmationPresented = true
 								} label: {
-									Image(systemName: "trash")
-									Text("Delete")
+									Label("Delete", systemImage: "trash")
 								}
 								.tint(.red)
-								
 								
 								Button {
 									vehicleDetailViewModel.selectedRefuel = refuel
 									isDetailSheetPresented = true
 								} label: {
-									Image(systemName: "square.and.pencil")
-									Text("Edit")
+									Label("Edit", systemImage: "square.and.pencil")
 								}
 							}
 							.contextMenu {
@@ -57,18 +54,13 @@ struct VehicleDetailVeiw: View {
 									vehicleDetailViewModel.selectedRefuel = refuel
 									isDetailSheetPresented = true
 								} label: {
-									Image(systemName: "square.and.pencil")
-									Text("Edit")
+									Label("Edit", systemImage: "square.and.pencil")
 								}
 								
-								Button {
+								Button("Delete", systemImage: "trash", role: .destructive) {
 									vehicleDetailViewModel.refuelToDelete = refuel
 									isDeleteConfirmmationPresented = true
-								} label: {
-									Image(systemName: "trash")
-									Text("Delete")
 								}
-								.tint(.red)
 							}
 					}
 				}

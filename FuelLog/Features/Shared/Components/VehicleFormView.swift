@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct VehicleFormView: View {
+	@Environment(PreferencesService.self) private var preferences
+	
 	@Binding var name: String
 	@Binding var brand: String
 	@Binding var model: String
@@ -94,8 +96,7 @@ struct VehicleFormView: View {
 						
 						Spacer()
 						
-						// TODO: Use locale for unit
-						Text("Liters")
+						Text(preferences.measurementUnit.volumeSingular)
 							.font(.subheadline)
 							.opacity(0.6)
 					}

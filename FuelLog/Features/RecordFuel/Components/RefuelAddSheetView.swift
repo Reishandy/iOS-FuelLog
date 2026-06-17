@@ -31,7 +31,7 @@ struct RefuelAddSheetView: View {
 				isFormValid: $isFormValid,
 				fuelTypes: fuelTypes
 			)
-			.navigationTitle("Add New Vehicle")
+			.navigationTitle("Record Refuel")
 			.navigationBarTitleDisplayMode(.inline)
 			.toolbar {
 				ToolbarItem(placement: .topBarLeading) {

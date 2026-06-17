@@ -15,6 +15,7 @@ final class PreferencesService {
 		static let defaultVehicleSort = "defaultVehicleSort"
 		static let currency = "currency"
 		static let measurementUnit = "measurementUnit"
+		static let priceInputMethod = "priceInputMethod"
 	}
 	
 	var defaultVehicle: UUID? {
@@ -51,6 +52,12 @@ final class PreferencesService {
 		}
 	}
 	
+	var priceInputMethod: PriceInputMethod {
+		didSet {
+			UserDefaults.standard.set(priceInputMethod.rawValue, forKey: Keys.priceInputMethod)
+		}
+	}
+	
 	init() {
 		if let uuidString = UserDefaults.standard.string(forKey: Keys.defaultVehicle),
 		   let savedUUID = UUID(uuidString: uuidString) {
@@ -84,5 +91,8 @@ final class PreferencesService {
 			let system = Locale.current.measurementSystem
 			self.measurementUnit = system == .metric ? .metric : .imperial
 		}
+		
+		let savedPriceInputMethod = UserDefaults.standard.string(forKey: Keys.priceInputMethod) ?? ""
+		self.priceInputMethod = PriceInputMethod(rawValue: savedPriceInputMethod) ?? .perUnit
 	}
 }
