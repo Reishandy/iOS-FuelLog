@@ -120,7 +120,7 @@ struct RefuelFormView: View {
 								.font(.subheadline)
 								.opacity(0.6)
 							
-							TextField("Price total", text: $priceTotalText)
+							TextField("Price Total", text: $priceTotalText)
 								.keyboardType(.decimalPad)
 								.focused($focusedField, equals: .priceTotal)
 						}
