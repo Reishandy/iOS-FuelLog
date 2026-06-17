@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import PhotosUI
 
 struct RecordFuelView: View {
 	@Namespace private var recordFuelScreenNameSpace
@@ -109,8 +110,17 @@ struct RecordFuelView: View {
 			}
 			
 			ToolbarItem(placement: .bottomBar) {
-				Button("Pick from gallery", systemImage: "photo.on.rectangle") {
-					// TODO: Gallery Picker
+				PhotosPicker(
+					selection: $recordFuelViewModel.selectedPhotoItems,
+					maxSelectionCount: 0,
+					matching: .images
+				) {
+					Label("Pick from gallery", systemImage: "photo.on.rectangle.angled")
+				}
+				.onChange(of: recordFuelViewModel.selectedPhotoItems) { oldValue, newValue in
+					guard !newValue.isEmpty else { return }
+					
+					Task { await recordFuelViewModel.processSelectedPhotos() }
 				}
 			}
 			

@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
+import PhotosUI
 
 @Observable
 class RecordFuelViewModel {
@@ -21,6 +23,8 @@ class RecordFuelViewModel {
 	}
 	var pendingCount: Int = 0
 	var isStatusSuccess: Bool? = nil
+	
+	var selectedPhotoItems: [PhotosPickerItem] = []
 	
 	var addOdometer: Double = 0.0
 	var addAmount: Double = 0.0
@@ -81,6 +85,16 @@ class RecordFuelViewModel {
 		self.addPricePerUnit = 0.0
 		self.addFuelType = ""
 		self.addTimestamp = .now
+	}
+	
+	func processSelectedPhotos() async {
+		for item in self.selectedPhotoItems {
+			if let data = try? await item.loadTransferable(type: Data.self) {
+				addImageTask(data)
+			}
+		}
+		
+		self.selectedPhotoItems = []
 	}
 	
 	func addImageTask(_ imageData: Data) {
