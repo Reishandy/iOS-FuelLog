@@ -153,7 +153,7 @@ struct HomeView: View {
 					isAddSheetPresented.toggle()
 				} label: {
 					Image(systemName: "plus")
-						.foregroundStyle(.orange)
+						.foregroundStyle(.white)
 				}
 				.buttonStyle(.glassProminent)
 				.tint(.orange)

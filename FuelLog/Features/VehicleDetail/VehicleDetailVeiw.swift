@@ -73,6 +73,8 @@ struct VehicleDetailVeiw: View {
 			}
 		}
 		.frame(maxHeight: .infinity, alignment: .top)
+		.navigationTitle("Vehicle Overview")
+		.navigationBarTitleDisplayMode(.inline)
 		.toolbar {
 			if let vehicle = vehicleDetailViewModel.vehicle {
 				ToolbarSpacer(placement: .bottomBar)
@@ -80,7 +82,7 @@ struct VehicleDetailVeiw: View {
 				ToolbarItem(placement: .bottomBar) {
 					NavigationLink(value: AppRoute.recordFuel(vehicle.id)) {
 						Image(systemName: "plus")
-							.foregroundStyle(.orange)
+							.foregroundStyle(.white)
 					}
 					.buttonStyle(.glassProminent)
 					.tint(.orange)
@@ -135,5 +137,6 @@ struct VehicleDetailVeiw: View {
 				vehicleId: firstVehicleId
 			)
 		)
+		.environment(PreferencesService())
 	}
 }

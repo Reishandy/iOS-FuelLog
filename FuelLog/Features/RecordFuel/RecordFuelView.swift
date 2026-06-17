@@ -41,13 +41,17 @@ struct RecordFuelView: View {
 				.frame(maxWidth: .infinity, maxHeight: .infinity)
 				.background(.gray)
 			
-			Rectangle()
-				.stroke(statusColor, lineWidth: 40)
-				.blur(radius: 40)
-				.opacity(statusColor == .clear ? 0.0 : 0.3)
-				.ignoresSafeArea()
-				.allowsHitTesting(false)
-				.animation(.easeInOut(duration: 0.3), value: statusColor)
+			LinearGradient(
+				colors: [statusColor, .clear],
+				startPoint: .bottom,
+				endPoint: .top
+			)
+			.blur(radius: 50)
+			.frame(height: 200)
+			.offset(y: 100)
+			.ignoresSafeArea()
+			.allowsHitTesting(false)
+			.animation(.easeInOut(duration: 0.5), value: statusColor)
 			
 			Color.black
 				.opacity(flashOpacity)
@@ -74,6 +78,8 @@ struct RecordFuelView: View {
 			.padding(.bottom, 30)
 		}
 		.navigationBarBackButtonHidden(true)
+		.navigationTitle("Record Refuel")
+		.navigationBarTitleDisplayMode(.inline)
 		.toolbar {
 			ToolbarItem(placement: .topBarLeading) {
 				Button {
@@ -130,7 +136,7 @@ struct RecordFuelView: View {
 					isAddSheetPresented = true
 				} label: {
 					Image(systemName: "fuelpump")
-						.foregroundStyle(.orange)
+						.foregroundStyle(.white)
 				}
 				.buttonStyle(.glassProminent)
 				.tint(.orange)
