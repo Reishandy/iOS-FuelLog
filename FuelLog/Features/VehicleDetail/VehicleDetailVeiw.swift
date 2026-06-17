@@ -83,6 +83,7 @@ struct VehicleDetailVeiw: View {
 							.foregroundStyle(.white)
 					}
 					.buttonStyle(.glassProminent)
+					.tint(.orange)
 				}
 			}
 		}

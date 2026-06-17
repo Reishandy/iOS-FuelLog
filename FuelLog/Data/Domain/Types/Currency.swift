@@ -1,49 +1,47 @@
-//
-//  Currency.swift
-//  FuelLog
-//
-//  Created by Muhammad Akbar Reishandy on 16/06/26.
-//
-
 import Foundation
 
-/// A curated list of the most common global currencies.
 enum Currency: String, CaseIterable {
 	case usd = "USD"
+	case cad = "CAD"
+	case brl = "BRL"
+	case mxn = "MXN"
+	
+	case chf = "CHF"
 	case eur = "EUR"
 	case gbp = "GBP"
-	case jpy = "JPY"
+	case sek = "SEK"
+	case `try` = "TRY"
+	
+	case aed = "AED"
+	case sar = "SAR"
+	case zar = "ZAR"
+	
 	case aud = "AUD"
-	case cad = "CAD"
 	case cny = "CNY"
+	case hkd = "HKD"
 	case inr = "INR"
-	case sgd = "SGD"
-	case idr = "IDR"
-	case chf = "CHF"
+	case jpy = "JPY"
 	case krw = "KRW"
+	case nzd = "NZD"
+	case twd = "TWD"
+	
+	case idr = "IDR"
+	case myr = "MYR"
+	case php = "PHP"
+	case sgd = "SGD"
+	case thb = "THB"
+	case vnd = "VND"
 	
 	var displayName: String {
 		return Locale.current.localizedString(forCurrencyCode: self.rawValue) ?? self.rawValue
 	}
 	
 	var symbol: String {
-		switch self {
-		case .usd, .aud, .cad, .sgd:
-			return "$"
-		case .eur:
-			return "€"
-		case .gbp:
-			return "£"
-		case .jpy, .cny:
-			return "¥"
-		case .inr:
-			return "₹"
-		case .idr:
-			return "Rp"
-		case .chf:
-			return "CHF"
-		case .krw:
-			return "₩"
-		}
+		let formatter = NumberFormatter()
+		formatter.numberStyle = .currency
+		formatter.currencyCode = self.rawValue
+		formatter.locale = Locale.current
+		
+		return formatter.currencySymbol ?? self.rawValue
 	}
 }

@@ -57,7 +57,7 @@ struct HomeView: View {
 						} label: {
 							Label("Default", systemImage: "checkmark.circle.fill")
 						}
-						.tint(vehicle.id == homeViewModel.defaultVehicle ? .blue : .secondary)
+						.tint(vehicle.id == homeViewModel.defaultVehicle ? .orange : .secondary)
 					}
 					.contextMenu {
 						Button {
@@ -65,7 +65,7 @@ struct HomeView: View {
 						} label: {
 							Label("Default", systemImage: "checkmark.circle.fill")
 						}
-						.tint(vehicle.id == homeViewModel.defaultVehicle ? .blue : .secondary)
+						.tint(vehicle.id == homeViewModel.defaultVehicle ? .orange : .secondary)
 						
 						Button {
 							homeViewModel.selectedVehicle = vehicle
@@ -146,6 +146,8 @@ struct HomeView: View {
 			
 			DefaultToolbarItem(kind: .search, placement: .bottomBar)
 			
+			ToolbarSpacer(placement: .bottomBar)
+			
 			ToolbarItem(placement: .bottomBar) {
 				Button {
 					isAddSheetPresented.toggle()
@@ -154,6 +156,7 @@ struct HomeView: View {
 						.foregroundStyle(.white)
 				}
 				.buttonStyle(.glassProminent)
+				.tint(.orange)
 				.matchedTransitionSource(id: "addSheetSource", in: homeScreenNameSpace)
 			}
 		}

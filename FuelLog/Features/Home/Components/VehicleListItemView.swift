@@ -23,7 +23,7 @@ struct VehicleListItemView: View {
 	var body: some View {
 		HStack(alignment: .center) {
 			Image(systemName: icon)
-				.foregroundStyle(isDefault ? .blue : .primary)
+				.foregroundStyle(isDefault ? .orange : .primary)
 			
 			VStack(alignment: .leading) {
 				Text(vehicle.name)

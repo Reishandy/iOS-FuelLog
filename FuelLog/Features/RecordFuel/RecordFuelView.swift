@@ -90,6 +90,7 @@ struct RecordFuelView: View {
 						.foregroundStyle(.white)
 				}
 				.buttonStyle(.glassProminent)
+				.tint(.orange)
 				.matchedTransitionSource(id: "addSheetSource", in: recordFuelScreenNameSpace)
 			}
 		}
