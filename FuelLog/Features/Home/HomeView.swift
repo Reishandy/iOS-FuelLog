@@ -21,14 +21,7 @@ struct HomeView: View {
 	var body: some View {
 		Group {
 			if homeViewModel.filteredVehicles.isEmpty {
-				VStack(spacing: 8) {
-					Text("No vehicle here")
-						.font(.title2)
-						.bold()
-					
-					Text("Add some first")
-						.opacity(0.7)
-				}
+				EmptyStateView(title: "No vehicle here", subTitle: "Add some first")
 			} else {
 				CustomListView(groupedItem: homeViewModel.filteredVehicles) { vehicle in
 					NavigationLink (

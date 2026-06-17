@@ -14,19 +14,12 @@ struct VehicleDetailVeiw: View {
 	@State private var isDetailSheetPresented: Bool = false
 	@State private var isDeleteConfirmmationPresented: Bool = false
 	
-    var body: some View {
+	var body: some View {
 		ZStack(alignment: .top) {
 			Group {
 				if vehicleDetailViewModel.filteredRefuels.isEmpty {
-					VStack(spacing: 8) {
-						Text("No refuel here")
-							.font(.title2)
-							.bold()
-						
-						Text("Record some first")
-							.opacity(0.7)
-					}
-					.frame(maxHeight: .infinity, alignment: .center)
+					EmptyStateView(title: "No refuel here", subTitle: "Record some first")
+						.frame(maxHeight: .infinity, alignment: .center)
 				} else {
 					CustomListView(
 						groupedItem: vehicleDetailViewModel.filteredRefuels,
@@ -119,7 +112,7 @@ struct VehicleDetailVeiw: View {
 			vehicleDetailViewModel.fetchData()
 		}
 		.animation(.default, value: vehicleDetailViewModel.filteredRefuels)
-    }
+	}
 }
 
 #Preview {

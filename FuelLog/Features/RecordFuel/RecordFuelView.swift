@@ -19,13 +19,24 @@ struct RecordFuelView: View {
 	@State private var isDismissConfirmationShown: Bool = false
 	@State private var buttonScale: CGFloat = 1.0
 	@State private var flashOpacity: Double = 0.0
+	@State private var focusPoint: CGPoint? = nil
+	@State private var showFocusReticle: Bool = false
 	
 	private var isProcessing: Bool {
 		recordFuelViewModel.pendingCount > 0
 	}
 	
 	private var processingText: String {
-		isProcessing ? "processing \(recordFuelViewModel.pendingCount) image\(recordFuelViewModel.pendingCount > 1 ? "s" : "")" : "capture to start process"
+		switch statusColor {
+		case .green:
+			"Data extracted"
+			
+		case .red:
+			"Nothing extracted"
+			
+		default:
+			isProcessing ? "processing \(recordFuelViewModel.pendingCount) image\(recordFuelViewModel.pendingCount > 1 ? "s" : "")" : "capture to start process"
+		}
 	}
 	
 	private var statusColor: Color {
@@ -36,47 +47,98 @@ struct RecordFuelView: View {
 	}
 	
 	var body: some View {
-		ZStack(alignment: .bottom) {
-			// TODO: Camera view
-			Text("TODO CAMERA")
-				.frame(maxWidth: .infinity, maxHeight: .infinity)
-				.background(.gray)
-			
-			LinearGradient(
-				colors: [statusColor, .clear],
-				startPoint: .bottom,
-				endPoint: .top
-			)
-			.blur(radius: 50)
-			.frame(height: 200)
-			.offset(y: 100)
-			.ignoresSafeArea()
-			.allowsHitTesting(false)
-			.animation(.easeInOut(duration: 0.5), value: statusColor)
-			
-			Color.black
-				.opacity(flashOpacity)
-				.ignoresSafeArea()
-				.allowsHitTesting(false)
-			
-			Button {
-				triggerShutterAnimation()
+		Group {
+			switch recordFuelViewModel.cameraService.permissionStatus {
+			case .authorized:
+				ZStack(alignment: .bottom) {
+					CameraPreviewView(
+						session: recordFuelViewModel.cameraService.session,
+						service: recordFuelViewModel.cameraService,
+						onFocusChange: { tapLocation in
+							self.focusPoint = tapLocation
+							
+							withAnimation(.easeInOut(duration: 0.2)) {
+								self.showFocusReticle = true
+							}
+							
+							DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+								withAnimation(.easeIn(duration: 0.2)) {
+									self.showFocusReticle = false
+								}
+							}
+						}
+					)
+					.ignoresSafeArea()
+					
+					if showFocusReticle, let point = focusPoint {
+						Rectangle()
+							.stroke(Color.yellow, lineWidth: 1)
+							.frame(width: 70, height: 70)
+							.position(point)
+							.ignoresSafeArea()
+					}
+					
+					Color.black
+						.opacity(flashOpacity)
+						.ignoresSafeArea()
+						.allowsHitTesting(false)
+					
+					LinearGradient(
+						colors: [statusColor, .clear],
+						startPoint: .bottom,
+						endPoint: .top
+					)
+					.blur(radius: 50)
+					.frame(height: 200)
+					.offset(y: 100)
+					.ignoresSafeArea()
+					.allowsHitTesting(false)
+					.animation(.easeInOut(duration: 0.5), value: statusColor)
+					
+					Button {
+						triggerShutterAnimation()
+						
+						recordFuelViewModel.cameraService.capturePhoto { rawData in
+							recordFuelViewModel.addImageTask(rawData)
+						}
+					} label: {
+						Circle()
+							.frame(width: 70)
+							.foregroundStyle(.white)
+							.scaleEffect(buttonScale)
+					}
+					.buttonStyle(.plain)
+					.background {
+						Circle()
+							.frame(width: 85, height: 85)
+							.glassEffect()
+					}
+					.padding(.bottom, 20)
+				}
+				.onAppear {
+					recordFuelViewModel.cameraService.setupSession()
+				}
 				
-				// TODO: Camera
-				recordFuelViewModel.addImageTask(Data())
-			} label: {
-				Circle()
-					.frame(width: 70)
-					.foregroundStyle(.white)
-					.scaleEffect(buttonScale)
+			case .notDetermined:
+				EmptyStateView(
+					title: "Camera Access Required",
+					subTitle: "We need access to your camera to show the viewfinder and take photos.",
+					actionText: "Grant Permission"
+				) {
+					recordFuelViewModel.cameraService.requestPermission()
+				}
+				
+			default:
+				EmptyStateView(
+					title: "Camera access was denied",
+					subTitle: "Please enable it in iPhone Settings.",
+					actionText: "Open Settings"
+				) {
+					if let url = URL(string: UIApplication.openSettingsURLString) {
+						UIApplication.shared.open(url)
+					}
+				}
 			}
-			.buttonStyle(.plain)
-			.background {
-				Circle()
-					.frame(width: 85, height: 85)
-					.glassEffect()
-			}
-			.padding(.bottom, 30)
 		}
 		.navigationBarBackButtonHidden(true)
 		.navigationTitle("Record Refuel")
@@ -87,7 +149,7 @@ struct RecordFuelView: View {
 					if recordFuelViewModel.isAddFormDirty {
 						isDismissConfirmationShown = true
 					} else {
-						recordFuelViewModel.cancelQueue()
+						recordFuelViewModel.cleanup()
 						dismiss()
 					}
 				} label: {
@@ -100,7 +162,7 @@ struct RecordFuelView: View {
 				) {
 					Button("Discard Change", role: .destructive) {
 						recordFuelViewModel.clearAddRefuel()
-						recordFuelViewModel.cancelQueue()
+						recordFuelViewModel.cleanup()
 						dismiss()
 					}
 					.buttonStyle(.bordered)
@@ -131,7 +193,7 @@ struct RecordFuelView: View {
 					Text(processingText)
 						.font(.callout)
 					
-					if isProcessing {
+					if isProcessing && statusColor == .clear {
 						ProgressView()
 					}
 				}

@@ -13,7 +13,7 @@ import PhotosUI
 @Observable
 class RecordFuelViewModel {
 	private var modelContext: ModelContext
-	private var visionWorker: VisionWorker
+	private var visionExtractService: VisionExtractService
 	private var vehicleId: UUID
 	private var vehicle: Vehicle? = nil
 	
@@ -25,6 +25,7 @@ class RecordFuelViewModel {
 	var isStatusSuccess: Bool? = nil
 	
 	var selectedPhotoItems: [PhotosPickerItem] = []
+	var cameraService: CameraService
 	
 	var addOdometer: Double = 0.0
 	var addAmount: Double = 0.0
@@ -40,7 +41,8 @@ class RecordFuelViewModel {
 	
 	init(modelContext: ModelContext, vehicleId: UUID) {
 		self.modelContext = modelContext
-		self.visionWorker = VisionWorker()
+		self.visionExtractService = VisionExtractService()
+		self.cameraService = CameraService()
 		self.vehicleId = vehicleId
 		
 		Task { await observeQueue() }
@@ -103,15 +105,19 @@ class RecordFuelViewModel {
 			imageData: imageData,
 		)
 		
-		Task { await self.visionWorker.enqueue(newTask) }
+		Task { await self.visionExtractService.enqueue(newTask) }
 	}
 	
-	func cancelQueue() {
-		Task { await self.visionWorker.cancelAll() }
+	func cleanup() {
+		if cameraService.session.isRunning {
+			cameraService.session.stopRunning()
+		}
+		
+		Task { await self.visionExtractService.cancelAll() }
 	}
 	
 	private func observeQueue() async {
-		for await event in await self.visionWorker.events {
+		for await event in await self.visionExtractService.events {
 			self.pendingCount = event.pendingCount
 			
 			if let result = event.completedTask {

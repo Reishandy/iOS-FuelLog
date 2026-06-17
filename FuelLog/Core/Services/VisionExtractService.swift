@@ -1,11 +1,11 @@
 //
-//  VisionWorker.swift
+//  VisionExtractService.swift
 //  FuelLog
 //
 //  Created by Muhammad Akbar Reishandy on 17/06/26.
 //
 
-actor VisionWorker {
+actor VisionExtractService {
 	private var queue: [VisionTask] = []
 	private var processingTask: Task<Void, Never>?
 	
