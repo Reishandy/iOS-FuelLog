@@ -27,23 +27,7 @@ struct RecordFuelView: View {
 	}
 	
 	private var processingText: String {
-		switch statusColor {
-		case .green:
-			"Data extracted"
-			
-		case .red:
-			"Nothing extracted"
-			
-		default:
-			isProcessing ? "processing \(recordFuelViewModel.pendingCount) image\(recordFuelViewModel.pendingCount > 1 ? "s" : "")" : "capture to start process"
-		}
-	}
-	
-	private var statusColor: Color {
-		guard let isSuccess = recordFuelViewModel.isStatusSuccess else {
-			return .clear
-		}
-		return isSuccess ? .green : .red
+		isProcessing ? "processing \(recordFuelViewModel.pendingCount) image\(recordFuelViewModel.pendingCount > 1 ? "s" : "")" : "waiting for image"
 	}
 	
 	var body: some View {
@@ -82,18 +66,6 @@ struct RecordFuelView: View {
 						.opacity(flashOpacity)
 						.ignoresSafeArea()
 						.allowsHitTesting(false)
-					
-					LinearGradient(
-						colors: [statusColor, .clear],
-						startPoint: .bottom,
-						endPoint: .top
-					)
-					.blur(radius: 50)
-					.frame(height: 200)
-					.offset(y: 100)
-					.ignoresSafeArea()
-					.allowsHitTesting(false)
-					.animation(.easeInOut(duration: 0.5), value: statusColor)
 					
 					Button {
 						triggerShutterAnimation()
@@ -193,7 +165,7 @@ struct RecordFuelView: View {
 					Text(processingText)
 						.font(.callout)
 					
-					if isProcessing && statusColor == .clear {
+					if isProcessing {
 						ProgressView()
 					}
 				}
