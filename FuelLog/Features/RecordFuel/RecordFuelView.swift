@@ -8,14 +8,15 @@
 import SwiftUI
 import SwiftData
 import PhotosUI
+import Toasts
 
 struct RecordFuelView: View {
 	@Namespace private var recordFuelScreenNameSpace
 	@Environment(\.dismiss) private var dismiss
+	@Environment(\.presentToast) var presentToast
 	
 	@State var recordFuelViewModel: RecordFuelViewModel
 	
-	@State private var isAddSheetPresented: Bool = false
 	@State private var isDismissConfirmationShown: Bool = false
 	@State private var buttonScale: CGFloat = 1.0
 	@State private var flashOpacity: Double = 0.0
@@ -177,7 +178,7 @@ struct RecordFuelView: View {
 			
 			ToolbarItem(placement: .bottomBar) {
 				Button {
-					isAddSheetPresented = true
+					recordFuelViewModel.isAddSheetPresented = true
 				} label: {
 					Image(systemName: "fuelpump")
 						.foregroundStyle(.white)
@@ -187,7 +188,7 @@ struct RecordFuelView: View {
 				.matchedTransitionSource(id: "addSheetSource", in: recordFuelScreenNameSpace)
 			}
 		}
-		.sheet(isPresented: $isAddSheetPresented) {
+		.sheet(isPresented: $recordFuelViewModel.isAddSheetPresented) {
 			RefuelAddSheetView(
 				odometer: $recordFuelViewModel.addOdometer,
 				amount: $recordFuelViewModel.addAmount,
@@ -197,15 +198,20 @@ struct RecordFuelView: View {
 				maxAmount: recordFuelViewModel.maxAmount,
 				fuelTypes: recordFuelViewModel.fuelTypes,
 				onDismissClick: {
-					isAddSheetPresented = false
+					recordFuelViewModel.isAddSheetPresented = false
 				},
 				onSaveClick: {
-					isAddSheetPresented = false
+					recordFuelViewModel.isAddSheetPresented = false
 					recordFuelViewModel.addRefuel()
 					dismiss()
 				}
 			)
 			.navigationTransition(.zoom(sourceID: "addSheetSource", in: recordFuelScreenNameSpace))
+		}
+		.onChange(of: recordFuelViewModel.toastCounter) { _, _ in
+			if let toast = recordFuelViewModel.toastToPresent {
+				presentToast(toast)
+			}
 		}
 		.task {
 			recordFuelViewModel.fetchData()

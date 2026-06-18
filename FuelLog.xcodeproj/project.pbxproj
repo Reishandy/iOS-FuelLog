@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8BA1677D2FE3827B00D81B26 /* Toasts in Frameworks */ = {isa = PBXBuildFile; productRef = 8BA1677C2FE3827B00D81B26 /* Toasts */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		8B97CF522FDBBBF200BFA917 /* FuelLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FuelLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BA1677D2FE3827B00D81B26 /* Toasts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = FuelLog;
 			packageProductDependencies = (
+				8BA1677C2FE3827B00D81B26 /* Toasts */,
 			);
 			productName = FuelLog;
 			productReference = 8B97CF522FDBBBF200BFA917 /* FuelLog.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 8B97CF492FDBBBF200BFA917;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8BA1677B2FE3827B00D81B26 /* XCRemoteSwiftPackageReference "swiftui-toasts" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8B97CF532FDBBBF200BFA917 /* Products */;
 			projectDirPath = "";
@@ -344,6 +353,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8BA1677B2FE3827B00D81B26 /* XCRemoteSwiftPackageReference "swiftui-toasts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sunghyun-k/swiftui-toasts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8BA1677C2FE3827B00D81B26 /* Toasts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BA1677B2FE3827B00D81B26 /* XCRemoteSwiftPackageReference "swiftui-toasts" */;
+			productName = Toasts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8B97CF4A2FDBBBF200BFA917 /* Project object */;
 }

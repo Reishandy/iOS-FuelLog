@@ -29,26 +29,29 @@ struct QueueEvent: Sendable {
 @Generable
 struct RefuelExtraction: Sendable {
 	@Guide(description: """
-  Vehicle odometer or mileage reading as a plain decimal number. \
-  Look for labels such as "ODO", "MILEAGE", "KM", or a large running \
-  number on a dashboard display or printed on a fuel receipt. \
-  Return the number only — no unit symbols.
+  Vehicle odometer/mileage as a plain decimal number. \
+  ONLY present on vehicle dashboards — look for labels "ODO", "ODOMETER", "MILEAGE", or "KM" \
+  referring explicitly to vehicle distance. \
+  NEVER set this field from a fuel pump display — pumps do not show odometer readings. \
+  Return null if no such label is present.
   """)
 	var odometer: Double?
 	
 	@Guide(description: """
   Total volume of fuel dispensed as a plain decimal number. \
-  On pump receipts this may be labelled "VOLUME", "LITRES", "LITERS", \
-  "QTY", "VOL", "JML LITER", or similar. \
+  Indonesian pumps label this "JUMLAH DIKELUARKAN DALAM LITER" or "JUMLAH DIKELUARKAN". \
+  Other pumps may use "VOLUME", "LITRES", "LITERS", "QTY", or "VOL". \
   Return the number only — no unit symbols.
   """)
 	var amount: Double?
 	
 	@Guide(description: """
   Price charged *per unit* of fuel as a plain decimal number. \
-  Look for labels such as "PRICE/L", "UNIT PRICE", "HARGA/LITER", \
-  "RM/L", or similar. \
-  Do NOT use the total transaction price — only the per-unit rate.
+  Indonesian pumps label this "HARGA SATU LITER" or "HARGA/LITER". \
+  Other pumps may use "PRICE/L", "UNIT PRICE", or "RM/L". \
+  The per-unit price is always much smaller than the total transaction price — \
+  do NOT use "JUMLAH HARGA" or any total/grand-total value here. \
+  Return the number only.
   """)
 	var pricePerUnit: Double?
 }
@@ -62,11 +65,11 @@ enum VisionExtractError: Error, Sendable, LocalizedError {
 	var errorDescription: String? {
 		switch self {
 		case .noTextDetected:
-			return "No text was detected in the image. Try a clearer, well-lit photo."
+			return "No text was detected in the image."
 		case .intelligenceUnavailable:
-			return "Apple Intelligence is not available. Check Settings › Apple Intelligence & Siri."
+			return "Apple Intelligence is not available."
 		case .modelNotReady:
-			return "The on-device model is still preparing. Please try again in a moment."
+			return "The on-device model is still preparing."
 		case .extractionFailed(let message):
 			return "Extraction failed: \(message)"
 		}

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Toasts
 
 @main
 struct FuelLogApp: App {
@@ -17,6 +18,7 @@ struct FuelLogApp: App {
             ContentView()
 				.modelContainer(for: [Vehicle.self, Refuel.self])
 				.environment(preferences)
+				.installToast(position: .bottom)
         }
     }
 }

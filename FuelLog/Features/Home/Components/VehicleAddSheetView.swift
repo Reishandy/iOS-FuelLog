@@ -22,7 +22,7 @@ struct VehicleAddSheetView: View {
 	@State private var isDismissConfirmationShown: Bool = false
 	
 	private var isFormFilled: Bool {
-		!name.isEmpty && !brand.isEmpty && !model.isEmpty
+		!name.isEmpty && !brand.isEmpty && !model.isEmpty && capacity != 0.0
 	}
 	
 	private var isFormDirty: Bool {

@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 import PhotosUI
+import Toasts
 
 @Observable
 class RecordFuelViewModel {
@@ -22,11 +23,13 @@ class RecordFuelViewModel {
 		vehicle?.tankCapacity ?? 0.0
 	}
 	var pendingCount: Int = 0
-	var isStatusSuccess: Bool? = nil
+	var toastToPresent: ToastValue?
+	var toastCounter: Int = 0
 	
 	var selectedPhotoItems: [PhotosPickerItem] = []
 	var cameraService: CameraService
 	
+	var isAddSheetPresented: Bool = false
 	var addOdometer: Double = 0.0
 	var addAmount: Double = 0.0
 	var addPricePerUnit: Double = 0.0
@@ -36,6 +39,11 @@ class RecordFuelViewModel {
 	var isAddFormDirty: Bool {
 		self.addOdometer != 0.0 ||
 		self.addAmount != 0.0 ||
+		self.addPricePerUnit != 0.0
+	}
+	var isAddFormFilled: Bool {
+		self.addOdometer != 0.0 &&
+		self.addAmount != 0.0 &&
 		self.addPricePerUnit != 0.0
 	}
 	
@@ -127,11 +135,39 @@ class RecordFuelViewModel {
 	}
 	
 	private func updateFromResult(_ visionResult: VisionResult) {
-		// TODO: Update status here and set stuff
-		self.isStatusSuccess = false
+		if !visionResult.isSuccessful {
+			self.toastToPresent = ToastValue(
+				icon: Image(systemName: "exclamationmark.triangle"),
+				message: visionResult.error?.errorDescription ?? "Unable to extract"
+			)
+			self.toastCounter += 1
+			
+			return
+		}
 		
-		DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-			self.isStatusSuccess = nil
+		self.addOdometer = visionResult.extraction?.odometer ?? self.addOdometer
+		self.addAmount = visionResult.extraction?.amount ?? self.addAmount
+		self.addPricePerUnit = visionResult.extraction?.pricePerUnit ?? self.addPricePerUnit
+		
+		if self.isAddFormFilled {
+			self.isAddSheetPresented = true
+			
+			Task { await self.visionExtractService.cancelAll() }
+			
+			return
+		}
+		
+		if visionResult.extraction?.odometer != nil ||
+			visionResult.extraction?.amount != nil ||
+			visionResult.extraction?.pricePerUnit != nil {
+			
+			self.toastToPresent = ToastValue(
+				icon: Image(systemName: "checkmark.circle"),
+				message: "Data extracted"
+			)
+			self.toastCounter += 1
+			
+			return
 		}
 	}
 }

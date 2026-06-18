@@ -11,18 +11,6 @@ import SwiftData
 struct ContentView: View {
 	@Environment(PreferencesService.self) private var preferences
 	
-	// TODO: Main todo list
-	//	- animation
-	//	- currency
-	//	- haptic and sound
-	//	- bunch of filters, group by, sort by, etc
-	//	- input with existing options from already inputted form
-	//	- Settings and preferences store
-	//	- Metrics or Imperial setting (if already have data offer to convert)
-	//	- Are you sure you want to discard in a filled fuel from
-	// TODO: Fix list
-	//	- Not navigating on the spacer place only on content for the list
-	
 	var body: some View {
 		AppNavigationView(initialVehicleId: preferences.defaultVehicle)
 	}

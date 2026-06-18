@@ -59,7 +59,6 @@ actor VisionExtractService {
 		do {
 			try Task.checkCancellation()
 			
-			// Stage 1 — OCR
 			let rawText = try recognizeText(from: task.imageData)
 			
 			guard !rawText.isEmpty else {
@@ -68,7 +67,6 @@ actor VisionExtractService {
 			
 			try Task.checkCancellation()
 			
-			// Stage 2 — Semantic extraction
 			let extraction = try await semanticExtract(from: rawText)
 			return VisionResult(id: task.id, extraction: extraction, error: nil)
 			
@@ -81,24 +79,32 @@ actor VisionExtractService {
 		}
 	}
 	
-	/// Synchronously runs `VNRecognizeTextRequest` on the image data and
-	/// returns all recognized strings joined by newlines.
 	nonisolated private func recognizeText(from imageData: Data) throws -> String {
 		let request = VNRecognizeTextRequest()
 		request.recognitionLevel = .accurate
 		request.usesLanguageCorrection = false
-		request.automaticallyDetectsLanguage = true
+		request.automaticallyDetectsLanguage = false
 		
 		let handler = VNImageRequestHandler(data: imageData, options: [:])
 		try handler.perform([request])
 		
-		return (request.results ?? [])
-			.compactMap { $0.topCandidates(1).first?.string }
-			.joined(separator: "\n")
+		let observations = request.results ?? []
+		guard !observations.isEmpty else { return "" }
+		
+		let rowGrouped = Dictionary(grouping: observations) { obs -> Int in
+			Int((obs.boundingBox.midY * 12).rounded()) // ~8% bands
+		}
+		
+		let sortedRows = rowGrouped.sorted { $0.key > $1.key }
+		
+		return sortedRows.map { (_, rowObservations) in
+			rowObservations
+				.sorted { $0.boundingBox.minX < $1.boundingBox.minX } // left → right
+				.compactMap { $0.topCandidates(1).first?.string }
+				.joined(separator: " ")
+		}.joined(separator: "\n")
 	}
 	
-	/// Uses the on-device Apple Intelligence model to semantically parse raw OCR
-	/// text into a typed `RefuelExtraction` struct.
 	nonisolated private func semanticExtract(from rawText: String) async throws -> RefuelExtraction {
 		switch SystemLanguageModel.default.availability {
 		case .available:
@@ -108,22 +114,36 @@ actor VisionExtractService {
 			case .deviceNotEligible:
 				throw VisionExtractError.intelligenceUnavailable
 			default:
-				// Covers .appleIntelligenceNotEnabled, model not downloaded, etc.
 				throw VisionExtractError.modelNotReady
 			}
 		}
 		
 		let session = LanguageModelSession(
 			instructions: Instructions("""
-		 You are a data extractor for a vehicle fuel log app.
-		 You receive raw OCR text scanned from fuel pump receipts, \
-		 fuel station displays, or vehicle dashboards.
-		 Extract only the numeric values for the three requested fields.
-		 Amounts from receipts in currencies like IDR/MYR/PHP may look like \
-		 "10.000" or "10,000" — always return these as plain decimals (10000).
-		 If a field cannot be confidently identified, leave it null.
-		 Never guess. Do not extract fuel type.
-		 """)
+	You are a data extractor for a vehicle fuel log app. \
+	You receive spatially-reconstructed OCR text from fuel pump displays \
+	or vehicle dashboards, where each line pairs a value with its label.
+	
+	FUEL PUMP DISPLAY rules:
+	- "JUMLAH HARGA" / "TOTAL PRICE" / "GRAND TOTAL" = total transaction cost. \
+	  This is NOT any of the three fields — ignore it entirely.
+	- "JUMLAH DIKELUARKAN DALAM LITER" / "VOLUME" / "LITRES" = fuel amount → `amount`
+	- "HARGA SATU LITER" / "HARGA/LITER" / "UNIT PRICE" / "PRICE/L" = per-unit price → `pricePerUnit`
+	- Fuel pump displays NEVER contain odometer readings. \
+	  Do NOT set `odometer` from a pump image under any circumstances.
+	
+	VEHICLE DASHBOARD rules:
+	- "ODO" / "ODOMETER" / "MILEAGE" = vehicle odometer → `odometer`
+	- Dashboards typically won't have `amount` or `pricePerUnit`.
+	
+	CURRENCY / NUMBER FORMAT:
+	- Indonesian/Malaysian receipts use periods as thousand separators: \
+	  "81.618" means 81618 and "12.200" means 12200. Return plain integers.
+	- A comma may be a decimal separator: "6,69" means 6.69.
+	
+	Extract only numeric values. If a field cannot be confidently identified, return null. \
+	Never guess.
+	""")
 		)
 		
 		let response = try await session.respond(

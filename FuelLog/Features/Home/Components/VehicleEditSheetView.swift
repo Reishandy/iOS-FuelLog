@@ -106,6 +106,7 @@ struct VehicleEditSheetView: View {
 						
 						onDismissClick()
 					}
+					.disabled(capacity == 0.0)
 				}
 			}
 		}

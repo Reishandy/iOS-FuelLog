@@ -181,6 +181,10 @@ struct RefuelFormView: View {
 				}
 			}
 			
+			if amount > maxAmount {
+				amount = maxAmount
+			}
+			
 			updateValidationAndSync()
 		}
 		.onChange(of: focusedField) { oldValue, newValue in
