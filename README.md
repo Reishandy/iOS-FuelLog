@@ -3,7 +3,7 @@
 A native, high-performance iOS application built to track, organize, and analyze vehicle fuel logs and expenses. This project was developed as a deep dive into modern SwiftUI patterns, local data persistence, and streamlining mileage tracking for daily commutes or long-distance touring.
 
 <p align="center">
-  <img src="light.png" width="120" alt="App Logo">
+  <img src="images/light.png" width="120" alt="App Logo">
 </p>
 
 ## Project Description
